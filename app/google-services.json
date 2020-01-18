@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "3914205980",
+    "firebase_url": "https://scivi-76fa8.firebaseio.com",
+    "project_id": "scivi-76fa8",
+    "storage_bucket": "scivi-76fa8.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:3914205980:android:203389ce1e6ba1f22dc8d9",
+        "android_client_info": {
+          "package_name": "itis.ru.scivi"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "3914205980-idfl7b8hngmonaqvk6fjubomlovjpm4e.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "itis.ru.scivi",
+            "certificate_hash": "786c07cafcb4b48afee22de61bd715f1dd5e8c95"
+          }
+        },
+        {
+          "client_id": "3914205980-cgr33ns078d2dohp5rjqjkh6buvo5sqs.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB53bi18W6XbMX6f4Rrrh5KX3QY29A8jKY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "3914205980-cgr33ns078d2dohp5rjqjkh6buvo5sqs.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
