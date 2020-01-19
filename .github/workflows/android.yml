@@ -2,11 +2,12 @@ name: Android CI
 
 on:
   push:
-    branches: 
-     - '*' 
-     - '!master' 
+    branches:
+      - '*'
+
 jobs:
- test:
+
+  test:
     name: Unit Tests
     runs-on: ubuntu-18.04
 
