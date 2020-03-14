@@ -53,19 +53,15 @@ class LoginFragment : BaseFragment() {
 
     private fun processLoginState(renderState: LoginState) {
         rootActivity.showLoading(false)
-        /*when (renderState) {
-            LoginState.SuccessLogin -> rootActivity.navigateTo(
-                PeopleFragment.toString(),
-                null
-            )
-            LoginState.SuccessRegister -> rootActivity.navigateTo(
-                EditProfileInfoFragment.toString(),
-                null
-            )
-            LoginState.Error -> view?.let {
+        when (renderState) {
+            LoginState.SuccessLogin -> rootActivity.navController.navigate(R.id.action_loginFragment_to_searchFragment)
+
+            LoginState.SuccessRegister -> rootActivity.navController.navigate(R.id.action_loginFragment_to_searchFragment)
+
+           /* LoginState.Error -> view?.let {
                 showSnackbar(getString(R.string.snackbar_error_message))
-            }
-        }*/
+            }*/
+        }
     }
 
     private fun openGoogleActivity(googleSignInClient: GoogleSignInClient) {
