@@ -31,7 +31,7 @@
         android:layout_marginBottom="32dp"
         android:background="@drawable/rounded_button"
         android:fontFamily="@font/ubuntu_italic"
-        android:text="Start using SciVi"
+        android:text="@string/start_using_scivi"
         android:textAllCaps="false"
         android:textSize="16sp"
         app:layout_constraintBottom_toBottomOf="parent"

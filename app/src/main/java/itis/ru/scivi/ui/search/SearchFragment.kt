@@ -14,10 +14,12 @@ import itis.ru.scivi.ui.base.BaseFragment
 import itis.ru.scivi.utils.dpToPx
 import kotlinx.android.synthetic.main.fragment_search.*
 import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEvent
+import net.yslibrary.android.keyboardvisibilityevent.Unregistrar
 
 
 class SearchFragment : BaseFragment() {
     private lateinit var transitionsContainer: ViewGroup
+    private lateinit var keyboardVisibilityEvent: Unregistrar
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -31,7 +33,7 @@ class SearchFragment : BaseFragment() {
         super.onViewCreated(view, savedInstanceState)
         transitionsContainer = view.findViewById(R.id.search_container) as ViewGroup
         setOnClickListeners()
-        KeyboardVisibilityEvent.setEventListener(
+        keyboardVisibilityEvent = KeyboardVisibilityEvent.registerEventListener(
             activity
         ) { visible ->
             if (visible) {
@@ -40,6 +42,11 @@ class SearchFragment : BaseFragment() {
                 animateDown()
             }
         }
+    }
+
+    override fun onStop() {
+        super.onStop()
+        keyboardVisibilityEvent.unregister()
     }
 
     private fun animateUp() {
@@ -88,6 +95,8 @@ class SearchFragment : BaseFragment() {
     }
 
     private fun setOnClickListeners() {
-
+        fab_add.setOnClickListener {
+            rootActivity.navController.navigate(R.id.action_searchFragment_to_addArticleFragment)
+        }
     }
 }

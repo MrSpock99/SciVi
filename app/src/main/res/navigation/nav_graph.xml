@@ -8,15 +8,26 @@
         android:id="@+id/loginFragment"
         android:name="itis.ru.scivi.ui.login.LoginFragment"
         android:label="fragment_login"
-        tools:layout="@layout/fragment_login" >
+        tools:layout="@layout/fragment_login">
         <action
             android:id="@+id/action_loginFragment_to_searchFragment"
             app:destination="@+id/searchFragment"
             app:enterAnim="@anim/nav_default_enter_anim"
-            app:exitAnim="@anim/nav_default_exit_anim" />
+            app:exitAnim="@anim/nav_default_exit_anim"
+            app:popUpTo="@+id/loginFragment"
+            app:popUpToInclusive="true" />
     </fragment>
     <fragment
         android:id="@+id/searchFragment"
         android:name="itis.ru.scivi.ui.search.SearchFragment"
-        android:label="SearchFragment" />
+        android:label="SearchFragment">
+        <action
+            android:id="@+id/action_searchFragment_to_addArticleFragment"
+            app:destination="@id/addArticleFragment"
+            app:enterAnim="@anim/right_to_left" />
+    </fragment>
+    <fragment
+        android:id="@+id/addArticleFragment"
+        android:name="itis.ru.scivi.ui.add_article.AddArticleFragment"
+        android:label="AddArticleFragment" />
 </navigation>
