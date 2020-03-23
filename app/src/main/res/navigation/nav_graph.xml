@@ -29,5 +29,18 @@
     <fragment
         android:id="@+id/addArticleFragment"
         android:name="itis.ru.scivi.ui.add_article.AddArticleFragment"
-        android:label="AddArticleFragment" />
+        android:label="AddArticleFragment">
+        <action
+            android:id="@+id/action_addArticleFragment_to_addAttachmentsFragment"
+            app:destination="@id/addAttachmentsFragment"
+            app:enterAnim="@anim/right_to_left" />
+    </fragment>
+    <fragment
+        android:id="@+id/addAttachmentsFragment"
+        android:name="itis.ru.scivi.ui.add_article.attachments.AddAttachmentsFragment"
+        android:label="AddAttachmentsFragment">
+        <argument
+            android:name="arg_article"
+            app:argType="itis.ru.scivi.model.ArticleLocal" />
+    </fragment>
 </navigation>
