@@ -1,5 +1,6 @@
 package itis.ru.scivi.di
 
+import itis.ru.scivi.interactors.AddArticleInteractor
 import itis.ru.scivi.interactors.LoginInteractor
 import itis.ru.scivi.interactors.ProfileInteractor
 import org.kodein.di.Kodein
@@ -13,5 +14,8 @@ fun interactorModule() = Kodein.Module("interactorModule") {
     }
     bind<ProfileInteractor>() with singleton {
         ProfileInteractor(userRepository = instance())
+    }
+    bind<AddArticleInteractor>() with singleton {
+        AddArticleInteractor(articleRepository = instance())
     }
 }

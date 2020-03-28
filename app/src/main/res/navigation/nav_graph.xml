@@ -40,7 +40,7 @@
         android:name="itis.ru.scivi.ui.add_article.attachments.AddAttachmentsFragment"
         android:label="AddAttachmentsFragment">
         <argument
-            android:name="arg_article"
+            android:name="article"
             app:argType="itis.ru.scivi.model.ArticleLocal" />
     </fragment>
 </navigation>

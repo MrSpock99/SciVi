@@ -3,6 +3,7 @@ package itis.ru.scivi.di
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.google.firebase.auth.FirebaseAuth
+import itis.ru.scivi.ui.add_article.AddArticleViewModel
 import itis.ru.scivi.utils.ViewModelFactory
 import itis.ru.scivi.ui.login.LoginViewModel
 import itis.ru.scivi.ui.main.MainViewModel
@@ -25,5 +26,8 @@ fun viewModelModule() = Kodein.Module(name = "viewModelModule") {
     }
     bind<ViewModel>(tag = LoginViewModel::class.java.simpleName) with provider {
         LoginViewModel(loginInteractor = instance(), profileInteractor = instance())
+    }
+    bind<ViewModel>(tag = AddArticleViewModel::class.java.simpleName) with provider {
+        AddArticleViewModel(addArticleInteractor = instance())
     }
 }
