@@ -4,4 +4,4 @@ import android.os.Parcelable
 import kotlinx.android.parcel.Parcelize
 
 @Parcelize
-data class ArticleLocal(val name: String) : Parcelable
+data class ArticleLocal(val id: String = "", val name: String) : Parcelable

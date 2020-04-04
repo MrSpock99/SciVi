@@ -39,7 +39,7 @@ class AddAttachmentsFragment : BaseFragment() {
 
     private fun setOnClickListeners() {
         btn_continue.setOnClickListener {
-            viewModel.addArticleToDb(ArticleLocal(args.article.name))
+            viewModel.addArticleToDb(ArticleLocal(name = args.article.name))
         }
     }
 
@@ -48,7 +48,7 @@ class AddAttachmentsFragment : BaseFragment() {
     }
 
     private fun setViewPager() {
-        val fragmentAdapter = AttachmentFragmentAdapter(fragmentManager!!)
+        val fragmentAdapter = AttachmentFragmentAdapter(fragmentManager!!, args.article.id)
         viewpager_main.adapter = fragmentAdapter
         tabs_main.setupWithViewPager(viewpager_main)
     }

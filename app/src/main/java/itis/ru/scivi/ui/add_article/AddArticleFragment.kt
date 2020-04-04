@@ -30,7 +30,7 @@ class AddArticleFragment : BaseFragment() {
             activity?.onBackPressed()
         }
         btn_continue.setOnClickListener {
-            val article = ArticleLocal(et_article_name.text.toString())
+            val article = ArticleLocal(name = et_article_name.text.toString())
             val action =
                 AddArticleFragmentDirections.actionAddArticleFragmentToAddAttachmentsFragment(
                     article
