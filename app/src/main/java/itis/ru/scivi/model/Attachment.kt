@@ -1,6 +1,10 @@
 package itis.ru.scivi.model
 
-open class Attachment{
+import android.os.Parcelable
+import kotlinx.android.parcel.Parcelize
+
+@Parcelize
+open class Attachment: Parcelable{
     var miniatureUrl: String = ""
     var name: String = ""
     var upload: Boolean = false

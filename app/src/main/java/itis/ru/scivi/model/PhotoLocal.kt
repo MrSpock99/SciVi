@@ -1,7 +1,8 @@
 package itis.ru.scivi.model
 
 import android.net.Uri
-import com.google.firebase.storage.StorageReference
-import java.net.URL
+import android.os.Parcelable
+import kotlinx.android.parcel.Parcelize
 
-data class PhotoLocal(val url: Uri?): Attachment()
+@Parcelize
+data class PhotoLocal(val url: Uri?, var name: String = "", var upload: Boolean = false): Parcelable

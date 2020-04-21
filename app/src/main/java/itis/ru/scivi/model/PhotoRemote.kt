@@ -1,6 +1,7 @@
 package itis.ru.scivi.model
 
 import android.net.Uri
-import com.google.firebase.storage.StorageReference
+import kotlinx.android.parcel.Parcelize
 
+@Parcelize
 data class PhotoRemote(val url: Uri): Attachment()

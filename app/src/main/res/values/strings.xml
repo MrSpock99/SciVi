@@ -6,4 +6,9 @@
     <string name="enter_article_name">Enter article name</string>
     <string name="continue_text">Continue</string>
     <string name="start_using_scivi">Start using SciVi</string>
+    <string name="ok">Ok</string>
+    <string name="cancel">Cancel</string>
+    <string name="type_name">Type name</string>
+    <string name="emtpy_name">Name cannot be empty</string>
+    <string name="error">Error</string>
 </resources>

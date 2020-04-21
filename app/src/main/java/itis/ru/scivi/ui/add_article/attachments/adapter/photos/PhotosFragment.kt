@@ -15,12 +15,12 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import itis.ru.scivi.R
 import itis.ru.scivi.model.PhotoLocal
+import itis.ru.scivi.ui.add_article.attachments.AttachmentNameActivity
 import itis.ru.scivi.ui.base.BaseFragment
 import itis.ru.scivi.utils.Const
 import itis.ru.scivi.utils.dpToPx
 import kotlinx.android.synthetic.main.fragment_attachments.*
 import org.kodein.di.generic.instance
-import java.util.*
 
 class PhotosFragment : BaseFragment() {
     private lateinit var adapter: PhotosAdapter
@@ -131,13 +131,19 @@ class PhotosFragment : BaseFragment() {
             val uri: Uri?
             if (data != null && data.data != null) {
                 uri = data.data!!
-                viewModel.uploadFile(
-                    uri,
-                    articleId,
-                    Const.FileType.IMAGE,
-                    UUID.randomUUID().toString()
+                startActivityForResult(
+                    AttachmentNameActivity.newIntent(rootActivity, uri),
+                    Const.RequestCode.ATTACHMENT_NAME
                 )
             }
+        } else if (requestCode == Const.RequestCode.ATTACHMENT_NAME && resultCode == Activity.RESULT_OK) {
+            val photoLocal = data!!.extras?.get(Const.Args.ATTACHMENT) as PhotoLocal
+            viewModel.uploadFile(
+                photoLocal.url!!,
+                articleId,
+                Const.FileType.IMAGE,
+                photoLocal.name
+            )
         }
     }
 

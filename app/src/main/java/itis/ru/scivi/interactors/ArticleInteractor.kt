@@ -11,7 +11,6 @@ import itis.ru.scivi.model.ArticleRemote
 import itis.ru.scivi.model.PhotoLocal
 import itis.ru.scivi.repository.ArticleRepository
 import java.io.FileInputStream
-import java.util.*
 
 class ArticleInteractor(private val articleRepository: ArticleRepository) {
     fun addArticleToRemoteDb(articleRemote: ArticleRemote): Completable {
@@ -38,10 +37,7 @@ class ArticleInteractor(private val articleRepository: ArticleRepository) {
             .flatMap { list ->
                 Observable.fromIterable(list)
                     .map { item ->
-                        val photo = PhotoLocal(url = item.url)
-                        photo.name = item.name
-                        photo.miniatureUrl = ""
-                        return@map photo
+                        return@map PhotoLocal(url = item.url, name = item.name)
 
                     }
                     .toList()

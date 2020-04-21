@@ -15,11 +15,14 @@ object Const {
     }
 
     object RequestCode {
+        val ATTACHMENT_NAME: Int = 2
         val GALLERY: Int = 1
     }
 
     object Args {
 
+        val ATTACHMENT: String = "ATTACHEMNT"
+        val FILE_PATH: String = "FILE_PATH"
         val CREATE_ARTICLE: String = "createArticle"
     }
 }
