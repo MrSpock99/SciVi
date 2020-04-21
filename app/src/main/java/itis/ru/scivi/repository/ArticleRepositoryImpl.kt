@@ -31,21 +31,6 @@ class ArticleRepositoryImpl(private val db: FirebaseFirestore, private val stora
     }
 
     override fun getArticlePhotos(articleId: String): Observable<List<PhotoRemote>> {
-        /*return Observable.create { emitter ->
-            db.collection(Const.Article.ATTACHMENTS)
-                .document(articleId).collection(Const.Article.PHOTOS)
-                .get()
-                .addOnCompleteListener { task ->
-                    if (task.isSuccessful) {
-                        task.result?.toObjects(PhotoRemote::class.java)
-                            ?.let { emitter.onNext(it) }
-                    } else {
-                        emitter.onError(
-                            task.exception ?: java.lang.Exception("error getting all photos")
-                        )
-                    }
-                }
-        }*/
         return Observable.create {emitter ->
             val imageRef = storage.reference.child("${articleId}/${Const.FileType.IMAGE}/")
             imageRef.listAll().addOnSuccessListener {
