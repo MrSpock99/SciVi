@@ -14,6 +14,6 @@ fun repositoryModule() = Kodein.Module("repositoryModule") {
         UserRepositoryImpl(firebaseAuth = instance(), db = instance())
     }
     bind<ArticleRepository>() with singleton {
-        ArticleRepositoryImpl(db = instance())
+        ArticleRepositoryImpl(db = instance(),storage = instance())
     }
 }

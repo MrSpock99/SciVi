@@ -25,6 +25,9 @@
             android:id="@+id/action_searchFragment_to_addArticleFragment"
             app:destination="@id/addArticleFragment"
             app:enterAnim="@anim/right_to_left" />
+        <action
+            android:id="@+id/action_searchFragment_to_addAttachmentsFragment"
+            app:destination="@id/addAttachmentsFragment" />
     </fragment>
     <fragment
         android:id="@+id/addArticleFragment"
@@ -42,5 +45,9 @@
         <argument
             android:name="article"
             app:argType="itis.ru.scivi.model.ArticleLocal" />
+        <argument
+            android:name="create_article"
+            app:argType="boolean"
+            android:defaultValue="false" />
     </fragment>
 </navigation>

@@ -9,6 +9,7 @@ import itis.ru.scivi.R
 import itis.ru.scivi.model.ArticleLocal
 import itis.ru.scivi.ui.base.BaseFragment
 import kotlinx.android.synthetic.main.fragment_add_article.*
+import java.util.*
 
 class AddArticleFragment : BaseFragment() {
     override fun onCreateView(
@@ -30,10 +31,10 @@ class AddArticleFragment : BaseFragment() {
             activity?.onBackPressed()
         }
         btn_continue.setOnClickListener {
-            val article = ArticleLocal(name = et_article_name.text.toString())
+            val article = ArticleLocal(name = et_article_name.text.toString(), id = UUID.randomUUID().toString())
             val action =
                 AddArticleFragmentDirections.actionAddArticleFragmentToAddAttachmentsFragment(
-                    article
+                    article,true
                 )
             rootActivity.navController.navigate(action)
         }

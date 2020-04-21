@@ -10,7 +10,4 @@ import org.kodein.di.generic.singleton
 fun appModule(context: Context) = Kodein.Module("appModule") {
     bind<Context>() with singleton { context }
     bind<FirebaseAuth>() with singleton { FirebaseAuth.getInstance() }
-    bind<FirebaseFirestore>() with singleton {
-        FirebaseFirestore.getInstance()
-    }
 }

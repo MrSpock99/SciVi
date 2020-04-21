@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.animation.LinearInterpolator
 import androidx.constraintlayout.widget.ConstraintSet
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
@@ -16,12 +17,16 @@ import androidx.transition.ChangeBounds
 import androidx.transition.Transition
 import androidx.transition.TransitionManager
 import itis.ru.scivi.R
+import itis.ru.scivi.model.ArticleLocal
+import itis.ru.scivi.ui.add_article.AddArticleFragmentDirections
 import itis.ru.scivi.ui.base.BaseFragment
 import itis.ru.scivi.utils.dpToPx
+import kotlinx.android.synthetic.main.fragment_add_article.*
 import kotlinx.android.synthetic.main.fragment_search.*
 import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEvent
 import net.yslibrary.android.keyboardvisibilityevent.Unregistrar
 import org.kodein.di.generic.instance
+import java.util.*
 
 
 class SearchFragment : BaseFragment() {
@@ -54,8 +59,10 @@ class SearchFragment : BaseFragment() {
         ) { visible ->
             if (visible) {
                 animateUp()
+                rv_articles.visibility = View.VISIBLE
             } else {
                 animateDown()
+                rv_articles.visibility = View.GONE
             }
         }
     }
@@ -131,7 +138,11 @@ class SearchFragment : BaseFragment() {
             ) {
                 if (s.isNotEmpty()) {
                     pb_downloading.visibility = View.VISIBLE
+                    rv_articles.visibility = View.VISIBLE
                     viewModel.getArticlesByKeyword(s.toString())
+                } else {
+                    rv_articles.visibility = View.GONE
+                    pb_downloading.visibility = View.GONE
                 }
             }
         })
@@ -147,9 +158,13 @@ class SearchFragment : BaseFragment() {
     }
 
     private fun initRecycler() {
-        adapter = SearchArticlesAdapter(arrayListOf(), {
-
-        })
+        adapter = SearchArticlesAdapter(arrayListOf()) {
+            val action =
+                SearchFragmentDirections.actionSearchFragmentToAddAttachmentsFragment(
+                    it
+                )
+            rootActivity.navController.navigate(action)
+        }
         rv_articles.adapter = adapter
         rv_articles.layoutManager = LinearLayoutManager(context)
     }

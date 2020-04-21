@@ -1,4 +1,4 @@
-package itis.ru.scivi.ui.add_article.attachments.adapter
+package itis.ru.scivi.ui.add_article.attachments.adapter.videos
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -21,7 +21,8 @@ class VideosFragment : BaseFragment() {
         fun newInstance(articleId: String): VideosFragment {
             val bundle = Bundle()
             bundle.putString(Const.Article.ID, articleId)
-            val fragment = VideosFragment()
+            val fragment =
+                VideosFragment()
             fragment.arguments = bundle
             return fragment
         }

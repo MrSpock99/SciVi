@@ -3,18 +3,21 @@ package itis.ru.scivi.ui.add_article.attachments.adapter
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentPagerAdapter
+import itis.ru.scivi.ui.add_article.attachments.adapter.photos.PhotosFragment
+import itis.ru.scivi.ui.add_article.attachments.adapter.videos.VideosFragment
 
-class AttachmentFragmentAdapter(fm: FragmentManager, private val articleId: String) :
+class AttachmentFragmentAdapter(fm: FragmentManager, private val articleId: String,
+                                private val createArticle: Boolean) :
     FragmentPagerAdapter(fm) {
 
     override fun getItem(position: Int): Fragment {
         return when (position) {
             0 -> {
-                PhotosFragment.newInstance(articleId)
+                PhotosFragment.newInstance(articleId, createArticle)
             }
             1 -> VideosFragment.newInstance(articleId)
             else -> {
-                return PhotosFragment.newInstance(articleId)
+                return PhotosFragment.newInstance(articleId, createArticle)
             }
         }
     }

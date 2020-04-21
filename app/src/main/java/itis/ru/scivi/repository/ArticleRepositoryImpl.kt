@@ -1,14 +1,18 @@
 package itis.ru.scivi.repository
 
+import com.google.android.gms.tasks.Tasks
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.storage.FirebaseStorage
 import io.reactivex.Completable
 import io.reactivex.Observable
-import io.reactivex.Single
 import itis.ru.scivi.model.ArticleRemote
-import itis.ru.scivi.model.Photo
+import itis.ru.scivi.model.PhotoRemote
 import itis.ru.scivi.utils.Const
+import org.jetbrains.anko.doAsync
+import org.jetbrains.anko.doAsyncResult
+import org.jetbrains.anko.onComplete
 
-class ArticleRepositoryImpl(private val db: FirebaseFirestore) : ArticleRepository {
+class ArticleRepositoryImpl(private val db: FirebaseFirestore, private val storage: FirebaseStorage) : ArticleRepository {
     override fun addArticleToRemoteDb(article: ArticleRemote): Completable {
         return Completable.create { emitter ->
             val articleMap = HashMap<String, Any>()
@@ -26,21 +30,37 @@ class ArticleRepositoryImpl(private val db: FirebaseFirestore) : ArticleReposito
         }
     }
 
-    override fun getArticlePhotos(articleId: String): Single<List<Photo>> {
-        return Single.create { emitter ->
+    override fun getArticlePhotos(articleId: String): Observable<List<PhotoRemote>> {
+        /*return Observable.create { emitter ->
             db.collection(Const.Article.ATTACHMENTS)
                 .document(articleId).collection(Const.Article.PHOTOS)
                 .get()
                 .addOnCompleteListener { task ->
                     if (task.isSuccessful) {
-                        task.result?.toObjects(Photo::class.java)
-                            ?.let { emitter.onSuccess(it) }
+                        task.result?.toObjects(PhotoRemote::class.java)
+                            ?.let { emitter.onNext(it) }
                     } else {
                         emitter.onError(
                             task.exception ?: java.lang.Exception("error getting all photos")
                         )
                     }
                 }
+        }*/
+        return Observable.create {emitter ->
+            val imageRef = storage.reference.child("${articleId}/${Const.FileType.IMAGE}/")
+            imageRef.listAll().addOnSuccessListener {
+                val list = mutableListOf<PhotoRemote>()
+                doAsync {
+                    it.items.forEach { ref ->
+                        val uri = Tasks.await(ref.downloadUrl.addOnCompleteListener { task ->
+                        })
+                        val photoRemote = PhotoRemote(url = uri)
+                        photoRemote.name = ref.name
+                        list.add(photoRemote)
+                    }
+                    emitter.onNext(list)
+                }.get()
+            }
         }
     }
 

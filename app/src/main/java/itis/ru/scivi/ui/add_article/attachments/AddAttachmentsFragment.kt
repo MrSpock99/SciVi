@@ -48,7 +48,7 @@ class AddAttachmentsFragment : BaseFragment() {
     }
 
     private fun setViewPager() {
-        val fragmentAdapter = AttachmentFragmentAdapter(fragmentManager!!, args.article.id)
+        val fragmentAdapter = AttachmentFragmentAdapter(fragmentManager!!, args.article.id, args.createArticle)
         viewpager_main.adapter = fragmentAdapter
         tabs_main.setupWithViewPager(viewpager_main)
     }

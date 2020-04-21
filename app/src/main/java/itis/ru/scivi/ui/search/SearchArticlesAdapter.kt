@@ -12,7 +12,7 @@ import kotlinx.android.synthetic.main.item_article.view.*
 
 class SearchArticlesAdapter(
     var list: List<ArticleLocal>,
-    private val clickListener: (Attachment) -> Unit
+    private val clickListener: (ArticleLocal) -> Unit
 ) :
     RecyclerView.Adapter<SearchArticlesAdapter.ArticleHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ArticleHolder {
@@ -36,7 +36,7 @@ class SearchArticlesAdapter(
     }
 
     override fun onBindViewHolder(holder: ArticleHolder, position: Int) {
-        holder.bind(list[position])
+        holder.bind(list[position],clickListener)
     }
 
     fun submitList(list: List<ArticleLocal>) {
@@ -46,8 +46,11 @@ class SearchArticlesAdapter(
     }
 
     class ArticleHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        fun bind(item: ArticleLocal) {
+        fun bind(item: ArticleLocal, clickListener: (ArticleLocal) -> Unit) {
             itemView.tv_article_name.text = item.name
+            itemView.setOnClickListener {
+                clickListener(item)
+            }
         }
     }
 
