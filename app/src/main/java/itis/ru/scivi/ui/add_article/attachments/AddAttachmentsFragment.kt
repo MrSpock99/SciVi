@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.fragment.navArgs
@@ -13,6 +14,7 @@ import itis.ru.scivi.ui.add_article.AddArticleViewModel
 import itis.ru.scivi.ui.add_article.attachments.adapter.AttachmentFragmentAdapter
 import itis.ru.scivi.ui.base.BaseFragment
 import kotlinx.android.synthetic.main.fragment_add_attachments.*
+import org.jetbrains.anko.toast
 import org.kodein.di.generic.instance
 
 class AddAttachmentsFragment : BaseFragment() {
@@ -35,11 +37,22 @@ class AddAttachmentsFragment : BaseFragment() {
         setViewPager()
         setOnClickListeners()
         setArticleInfo()
+        setVisibilities()
+        viewModel.addArticleLiveData.observe(this, Observer {
+            rootActivity.toast(getString(R.string.article_add_success))
+            rootActivity.navController.navigate(R.id.searchFragment)
+        })
+    }
+
+    private fun setVisibilities() {
+        if (!args.createArticle) {
+            btn_continue.visibility = View.GONE
+        }
     }
 
     private fun setOnClickListeners() {
         btn_continue.setOnClickListener {
-            viewModel.addArticleToDb(ArticleLocal(name = args.article.name))
+            viewModel.addArticleToDb(ArticleLocal(name = args.article.name, id = args.article.id))
         }
     }
 
@@ -48,9 +61,14 @@ class AddAttachmentsFragment : BaseFragment() {
     }
 
     private fun setViewPager() {
-        val fragmentAdapter = AttachmentFragmentAdapter(fragmentManager!!, args.article.id, args.createArticle)
+        val fragmentAdapter =
+            AttachmentFragmentAdapter(fragmentManager!!, args.article.id, args.createArticle)
         viewpager_main.adapter = fragmentAdapter
         tabs_main.setupWithViewPager(viewpager_main)
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
     }
 
 }

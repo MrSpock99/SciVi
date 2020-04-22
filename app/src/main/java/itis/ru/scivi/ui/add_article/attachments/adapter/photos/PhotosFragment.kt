@@ -48,6 +48,10 @@ class PhotosFragment : BaseFragment() {
         observePhotos()
         observeLoading()
         observeUploadStatus()
+    }
+
+    override fun onResume() {
+        super.onResume()
         viewModel.getArticlePhotos(arguments?.getString(Const.Article.ID).toString())
     }
 

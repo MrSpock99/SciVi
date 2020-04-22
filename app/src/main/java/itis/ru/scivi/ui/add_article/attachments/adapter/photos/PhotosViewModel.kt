@@ -17,13 +17,17 @@ class PhotosViewModel(private val interactor: ArticleInteractor, private val con
     val uploadCompleteLiveData = MutableLiveData<Response<Boolean>>()
 
     fun getArticlePhotos(articleId: String) {
+        showLoadingLiveData.value = true
+
         disposables.add(
             interactor.getArticlePhotos(articleId)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({
                     photosLiveData.value = Response.success(it.toMutableList())
+                    showLoadingLiveData.value = false
                 }, {
                     photosLiveData.value = Response.error(it)
+                    showLoadingLiveData.value = false
                 })
         )
     }

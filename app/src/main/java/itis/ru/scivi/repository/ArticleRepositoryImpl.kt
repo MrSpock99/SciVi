@@ -19,7 +19,7 @@ class ArticleRepositoryImpl(private val db: FirebaseFirestore, private val stora
             articleMap[Const.Article.NAME] = article.name
             val document = db.collection(Const.Article.ARTICLES)
                 .document()
-            articleMap[Const.Article.ID] = document.id
+            articleMap[Const.Article.ID] = article.id
 
             document.set(articleMap)
                 .addOnSuccessListener {

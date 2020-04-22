@@ -1,5 +1,6 @@
 package itis.ru.scivi.ui.search
 
+import android.content.Context
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -7,8 +8,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.LinearInterpolator
+import android.view.inputmethod.InputMethodManager
 import androidx.constraintlayout.widget.ConstraintSet
-import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
@@ -17,16 +18,13 @@ import androidx.transition.ChangeBounds
 import androidx.transition.Transition
 import androidx.transition.TransitionManager
 import itis.ru.scivi.R
-import itis.ru.scivi.model.ArticleLocal
-import itis.ru.scivi.ui.add_article.AddArticleFragmentDirections
 import itis.ru.scivi.ui.base.BaseFragment
 import itis.ru.scivi.utils.dpToPx
-import kotlinx.android.synthetic.main.fragment_add_article.*
+import itis.ru.scivi.utils.showKeyboard
 import kotlinx.android.synthetic.main.fragment_search.*
 import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEvent
 import net.yslibrary.android.keyboardvisibilityevent.Unregistrar
 import org.kodein.di.generic.instance
-import java.util.*
 
 
 class SearchFragment : BaseFragment() {
@@ -54,11 +52,19 @@ class SearchFragment : BaseFragment() {
         initRecycler()
         setTextChangeListener()
         observeSearchResults()
+    }
+
+    override fun onStart() {
+        super.onStart()
+        if(rv_articles.visibility == View.VISIBLE){
+            moveUp(false)
+            context?.let { showKeyboard(it) }
+        }
         keyboardVisibilityEvent = KeyboardVisibilityEvent.registerEventListener(
             activity
         ) { visible ->
             if (visible) {
-                animateUp()
+                moveUp(true)
                 rv_articles.visibility = View.VISIBLE
             } else {
                 animateDown()
@@ -72,8 +78,9 @@ class SearchFragment : BaseFragment() {
         keyboardVisibilityEvent.unregister()
     }
 
-    private fun animateUp() {
-        TransitionManager.beginDelayedTransition(transitionsContainer, getTransition())
+    private fun moveUp(animate: Boolean) {
+        if(animate)
+            TransitionManager.beginDelayedTransition(transitionsContainer, getTransition())
         tv_app_name.visibility = View.GONE
 
         val marginParams = (et_search.layoutParams as ViewGroup.MarginLayoutParams)
@@ -120,6 +127,7 @@ class SearchFragment : BaseFragment() {
     private fun setOnClickListeners() {
         fab_add.setOnClickListener {
             rootActivity.navController.navigate(R.id.action_searchFragment_to_addArticleFragment)
+            rv_articles.visibility = View.GONE
         }
     }
 
