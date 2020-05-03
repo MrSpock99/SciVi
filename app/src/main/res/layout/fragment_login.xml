@@ -6,14 +6,18 @@
     android:layout_height="match_parent"
     tools:context=".ui.login.LoginFragment">
 
-    <ImageView
-        android:id="@+id/iv_app_logo"
+    <TextView
+        android:id="@+id/tv_app_name"
         android:layout_width="175dp"
-        android:layout_height="175dp"
+        android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="96dp"
+        android:layout_marginTop="110dp"
         android:layout_marginEnd="8dp"
-        android:src="@raw/app_logo"
+        android:fontFamily="@font/ubuntu_medium"
+        android:text="@string/app_name"
+        android:textAlignment="center"
+        android:textColor="@color/colorPrimary"
+        android:textSize="60sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -27,7 +31,7 @@
         android:layout_marginBottom="32dp"
         android:background="@drawable/rounded_button"
         android:fontFamily="@font/ubuntu_italic"
-        android:text="Start using SciVi"
+        android:text="@string/start_using_scivi"
         android:textAllCaps="false"
         android:textSize="16sp"
         app:layout_constraintBottom_toBottomOf="parent"

@@ -1,4 +1,20 @@
 <resources>
     <string name="app_name">SciVi</string>
     <string name="google_api_token">3914205980-cgr33ns078d2dohp5rjqjkh6buvo5sqs.apps.googleusercontent.com</string>
+    <string name="search_articles">Search articles...</string>
+    <string name="what_s_the_article_name">What\'s the article name?</string>
+    <string name="enter_article_name">Enter article name</string>
+    <string name="continue_text">Continue</string>
+    <string name="start_using_scivi">Start using SciVi</string>
+    <string name="ok">Ok</string>
+    <string name="cancel">Cancel</string>
+    <string name="type_name">Type name</string>
+    <string name="emtpy_name">Name cannot be empty</string>
+    <string name="error">Error</string>
+    <string name="article_add_success">Article has been added successfully</string>
+    <string name="upload_photo">Upload photo</string>
+    <string name="upload_video">Upload video</string>
+    <string name="photos">Photos</string>
+    <string name="videos">Videos</string>
+    <string name="ar">AR</string>
 </resources>
