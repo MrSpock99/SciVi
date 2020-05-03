@@ -100,7 +100,7 @@ class PhotosFragment : BaseFragment() {
             uploadItem = PhotoLocal(null)
             uploadItem?.let {
                 it.upload = true
-                it.name = "Upload photo"
+                it.name = getString(R.string.upload_photo)
                 initList.add(it)
             }
         }
@@ -149,7 +149,7 @@ class PhotosFragment : BaseFragment() {
             if (data != null && data.data != null) {
                 uri = data.data!!
                 startActivityForResult(
-                    AttachmentNameActivity.newIntent(rootActivity, uri),
+                    AttachmentNameActivity.newIntent(rootActivity, uri, Const.FileType.IMAGE),
                     Const.RequestCode.ATTACHMENT_NAME
                 )
             }

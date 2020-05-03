@@ -7,10 +7,9 @@ import io.reactivex.Completable
 import io.reactivex.Observable
 import itis.ru.scivi.model.ArticleRemote
 import itis.ru.scivi.model.PhotoRemote
+import itis.ru.scivi.model.VideoRemote
 import itis.ru.scivi.utils.Const
 import org.jetbrains.anko.doAsync
-import org.jetbrains.anko.doAsyncResult
-import org.jetbrains.anko.onComplete
 
 class ArticleRepositoryImpl(private val db: FirebaseFirestore, private val storage: FirebaseStorage) : ArticleRepository {
     override fun addArticleToRemoteDb(article: ArticleRemote): Completable {
@@ -66,6 +65,25 @@ class ArticleRepositoryImpl(private val db: FirebaseFirestore, private val stora
                         )
                     }
                 }
+        }
+    }
+
+    override fun getArticleVideos(articleId: String): Observable<List<VideoRemote>> {
+        return Observable.create { emitter ->
+            val imageRef = storage.reference.child("${articleId}/${Const.FileType.VIDEO}/")
+            imageRef.listAll().addOnSuccessListener {
+                val list = mutableListOf<VideoRemote>()
+                doAsync {
+                    it.items.forEach { ref ->
+                        val uri = Tasks.await(ref.downloadUrl.addOnCompleteListener { task ->
+                        })
+                        val videoRemote = VideoRemote(url = uri)
+                        videoRemote.name = ref.name
+                        list.add(videoRemote)
+                    }
+                    emitter.onNext(list)
+                }.get()
+            }
         }
     }
 }

@@ -18,6 +18,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".ui.add_article.attachments.AttachmentNameActivity" />
+        <activity android:name=".ui.add_article.attachments.adapter.videos.VideoPlayerActivity" />
     </application>
 
 </manifest>

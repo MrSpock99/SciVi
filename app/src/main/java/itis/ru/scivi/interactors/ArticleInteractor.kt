@@ -8,10 +8,7 @@ import com.google.gson.GsonBuilder
 import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.schedulers.Schedulers
-import itis.ru.scivi.model.ArticleLocal
-import itis.ru.scivi.model.ArticleRemote
-import itis.ru.scivi.model.PhotoLocal
-import itis.ru.scivi.model.UploadModel
+import itis.ru.scivi.model.*
 import itis.ru.scivi.repository.ArticleRepository
 import itis.ru.scivi.utils.Const
 import itis.ru.scivi.utils.UriSerializer
@@ -30,6 +27,19 @@ class ArticleInteractor(private val articleRepository: ArticleRepository) {
                 Observable.fromIterable(list)
                     .map { item ->
                         return@map PhotoLocal(url = item.url, name = item.name)
+                    }
+                    .toList()
+                    .toObservable()
+            }
+    }
+
+    fun getArticleVideos(articleId: String): Observable<List<VideoLocal>> {
+        return articleRepository.getArticleVideos(articleId).subscribeOn(Schedulers.io())
+            .flatMap { list ->
+                Observable.fromIterable(list)
+                    .map { item ->
+                        return@map VideoLocal(url = item.url, name = item.name)
+
                     }
                     .toList()
                     .toObservable()

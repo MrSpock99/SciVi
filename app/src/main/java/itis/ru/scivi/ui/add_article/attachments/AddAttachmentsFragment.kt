@@ -62,13 +62,14 @@ class AddAttachmentsFragment : BaseFragment() {
 
     private fun setViewPager() {
         val fragmentAdapter =
-            AttachmentFragmentAdapter(fragmentManager!!, args.article.id, args.createArticle)
+            AttachmentFragmentAdapter(
+                fragmentManager!!,
+                args.article.id,
+                args.createArticle,
+                rootActivity
+            )
         viewpager_main.adapter = fragmentAdapter
         tabs_main.setupWithViewPager(viewpager_main)
-    }
-
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
     }
 
 }

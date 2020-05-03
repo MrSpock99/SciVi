@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.google.firebase.auth.FirebaseAuth
 import itis.ru.scivi.ui.add_article.AddArticleViewModel
 import itis.ru.scivi.ui.add_article.attachments.adapter.photos.PhotosViewModel
+import itis.ru.scivi.ui.add_article.attachments.adapter.videos.VideosViewModel
 import itis.ru.scivi.ui.login.LoginViewModel
 import itis.ru.scivi.ui.main.MainViewModel
 import itis.ru.scivi.ui.search.SearchViewModel
@@ -37,6 +38,11 @@ fun viewModelModule() = Kodein.Module(name = "viewModelModule") {
     }
     bind<ViewModel>(tag = PhotosViewModel::class.java.simpleName) with provider {
         PhotosViewModel(
+            interactor = instance()
+        )
+    }
+    bind<ViewModel>(tag = VideosViewModel::class.java.simpleName) with provider {
+        VideosViewModel(
             interactor = instance()
         )
     }
