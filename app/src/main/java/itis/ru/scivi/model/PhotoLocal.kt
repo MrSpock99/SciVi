@@ -5,4 +5,9 @@ import android.os.Parcelable
 import kotlinx.android.parcel.Parcelize
 
 @Parcelize
-data class PhotoLocal(val url: Uri?, var name: String = "", var upload: Boolean = false): Parcelable
+data class PhotoLocal(
+    val url: Uri?,
+    var name: String = "",
+    var upload: Boolean = false,
+    var isSent: Boolean = true
+) : Parcelable

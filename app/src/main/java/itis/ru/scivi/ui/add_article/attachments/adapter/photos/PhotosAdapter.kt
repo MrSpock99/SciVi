@@ -10,7 +10,10 @@ import itis.ru.scivi.R
 import itis.ru.scivi.model.PhotoLocal
 import kotlinx.android.synthetic.main.item_photo.view.*
 
-class PhotosAdapter(var list: List<PhotoLocal>, private val clickListener: (PhotoLocal) -> Unit) :
+class PhotosAdapter(
+    var list: MutableList<PhotoLocal>,
+    private val clickListener: (PhotoLocal) -> Unit
+) :
     RecyclerView.Adapter<PhotosAdapter.AttachmentHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AttachmentHolder {
         val inflater = LayoutInflater.from(parent.context)
@@ -36,7 +39,7 @@ class PhotosAdapter(var list: List<PhotoLocal>, private val clickListener: (Phot
         holder.bind(list[position], clickListener)
     }
 
-    fun submitList(list: List<PhotoLocal>) {
+    fun submitList(list: MutableList<PhotoLocal>) {
         val duffResult = DiffUtil.calculateDiff(
             PhotoDiffUtilCallback(
                 this.list,
@@ -52,10 +55,17 @@ class PhotosAdapter(var list: List<PhotoLocal>, private val clickListener: (Phot
             itemView.tv_attachment_name.text = item.name
             if (item.upload) {
                 itemView.iv_attachment_photo.setImageResource(R.drawable.ic_file_upload_white)
-            } else {
+                itemView.iv_attachment_photo.visibility = View.VISIBLE
+                itemView.pb_downloading.visibility = View.GONE
+            } else if (item.isSent) {
+                itemView.iv_attachment_photo.visibility = View.VISIBLE
+                itemView.pb_downloading.visibility = View.GONE
                 Glide.with(itemView)
                     .load(item.url)
                     .into(itemView.iv_attachment_photo)
+            } else {
+                itemView.iv_attachment_photo.visibility = View.GONE
+                itemView.pb_downloading.visibility = View.VISIBLE
             }
             itemView.setOnClickListener {
                 clickListener(item)
@@ -69,7 +79,7 @@ class PhotosAdapter(var list: List<PhotoLocal>, private val clickListener: (Phot
     ) :
         DiffUtil.Callback() {
         override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
-            return oldList[oldItemPosition] == newList[newItemPosition]
+            return oldList[oldItemPosition].url == newList[newItemPosition].url
         }
 
         override fun getOldListSize(): Int {

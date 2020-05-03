@@ -13,12 +13,15 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.work.WorkInfo
+import androidx.work.WorkManager
 import itis.ru.scivi.R
 import itis.ru.scivi.model.PhotoLocal
 import itis.ru.scivi.ui.add_article.attachments.AttachmentNameActivity
 import itis.ru.scivi.ui.base.BaseFragment
 import itis.ru.scivi.utils.Const
 import itis.ru.scivi.utils.dpToPx
+import itis.ru.scivi.workers.UploadWorker
 import kotlinx.android.synthetic.main.fragment_attachments.*
 import org.kodein.di.generic.instance
 
@@ -55,16 +58,19 @@ class PhotosFragment : BaseFragment() {
         viewModel.getArticlePhotos(arguments?.getString(Const.Article.ID).toString())
     }
 
+    private fun observeUploadStatus() {
+        WorkManager.getInstance().getWorkInfosByTagLiveData(UploadWorker::class.toString())
+            .observe(this, Observer { workInfo ->
+                if (workInfo != null) {
+                    if (workInfo.any { it.state == WorkInfo.State.SUCCEEDED })
+                        viewModel.getArticlePhotos(arguments?.getString(Const.Article.ID).toString())
+                }
+            })
+    }
+
     private fun observeLoading() {
         viewModel.showLoadingLiveData.observe(this, Observer {
             rootActivity.showLoading(it)
-        })
-    }
-
-    private fun observeUploadStatus() {
-        viewModel.uploadCompleteLiveData.observe(this, Observer {
-            if (it.data != null)
-                viewModel.getArticlePhotos(arguments?.getString(Const.Article.ID).toString())
         })
     }
 
@@ -76,7 +82,14 @@ class PhotosFragment : BaseFragment() {
                 uploadItem?.let {
                     response.data.add(it)
                 }
-                adapter.submitList(response.data)
+                val minusList = response.data.minus(adapter.list)
+                val currentList = adapter.list
+                minusList.forEach { photoLocal ->
+                    currentList[currentList.indexOf(currentList.find { photoLocal.name == it.name })] =
+                        photoLocal
+                }
+                adapter.submitList(currentList)
+                adapter.notifyDataSetChanged()
             }
         })
     }
@@ -142,6 +155,10 @@ class PhotosFragment : BaseFragment() {
             }
         } else if (requestCode == Const.RequestCode.ATTACHMENT_NAME && resultCode == Activity.RESULT_OK) {
             val photoLocal = data!!.extras?.get(Const.Args.ATTACHMENT) as PhotoLocal
+            photoLocal.isSent = false
+            adapter.list.add(0, photoLocal)
+            adapter.notifyItemInserted(0)
+            adapter.submitList(adapter.list)
             viewModel.uploadFile(
                 photoLocal.url!!,
                 articleId,

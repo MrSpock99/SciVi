@@ -21,6 +21,7 @@ object Const {
 
     object Args {
 
+        val UPLOAD_MODEL: String = "UPLOAD_MODEL"
         val ATTACHMENT: String = "ATTACHEMNT"
         val FILE_PATH: String = "FILE_PATH"
         val CREATE_ARTICLE: String = "createArticle"

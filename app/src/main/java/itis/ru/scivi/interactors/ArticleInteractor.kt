@@ -1,16 +1,21 @@
 package itis.ru.scivi.interactors
 
-import com.google.firebase.ktx.Firebase
-import com.google.firebase.storage.StorageReference
-import com.google.firebase.storage.ktx.storage
+import android.net.Uri
+import androidx.work.Data
+import androidx.work.OneTimeWorkRequest
+import androidx.work.WorkManager
+import com.google.gson.GsonBuilder
 import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.schedulers.Schedulers
 import itis.ru.scivi.model.ArticleLocal
 import itis.ru.scivi.model.ArticleRemote
 import itis.ru.scivi.model.PhotoLocal
+import itis.ru.scivi.model.UploadModel
 import itis.ru.scivi.repository.ArticleRepository
-import java.io.FileInputStream
+import itis.ru.scivi.utils.Const
+import itis.ru.scivi.utils.UriSerializer
+import itis.ru.scivi.workers.UploadWorker
 
 class ArticleInteractor(private val articleRepository: ArticleRepository) {
     fun addArticleToRemoteDb(articleRemote: ArticleRemote): Completable {
@@ -19,26 +24,12 @@ class ArticleInteractor(private val articleRepository: ArticleRepository) {
     }
 
     fun getArticlePhotos(articleId: String): Observable<List<PhotoLocal>> {
-        /*return articleRepository.getArticlePhotos(articleId)
-            .subscribeOn(Schedulers.io())
-            .flatMap { list ->
-                Observable.fromIterable(list)
-                    .map { item ->
-                        val photo = PhotoLocal(url = item.url)
-                        photo.name = item.name
-                        photo.miniatureUrl = item.miniatureUrl
-                        return@map photo
-                    }
-                    .toList()
-                    .toObservable()
-            }*/
         return articleRepository.getArticlePhotos(articleId)
             .subscribeOn(Schedulers.io())
             .flatMap { list ->
                 Observable.fromIterable(list)
                     .map { item ->
                         return@map PhotoLocal(url = item.url, name = item.name)
-
                     }
                     .toList()
                     .toObservable()
@@ -56,23 +47,25 @@ class ArticleInteractor(private val articleRepository: ArticleRepository) {
             }
     }
 
-    fun uploadFileFromStream(
-        stream: FileInputStream,
+    fun uploadFileFromUri(
         articleId: String,
         fileType: String,
-        fileName: String
-    ): Completable {
-        return Completable.create { emitter ->
-            val storage = Firebase.storage
-            var storageRef = storage.reference
-            var imagesRef: StorageReference? =
-                storageRef.child("${articleId}/${fileType}/${fileName}")
-            val uploadTask = imagesRef?.putStream(stream)
-            uploadTask?.addOnSuccessListener {
-                emitter.onComplete()
-            }?.addOnFailureListener {
-                emitter.onError(it)
-            }
-        }
+        fileName: String,
+        uri: Uri
+    ) {
+        val gson = GsonBuilder()
+            .registerTypeAdapter(Uri::class.java, UriSerializer())
+            .create()
+        val uploadModel =
+            UploadModel(uri = uri, articleId = articleId, fileType = fileType, name = fileName)
+        val workData = Data.Builder().putString(
+            Const.Args.UPLOAD_MODEL, gson.toJson(uploadModel)
+        ).build()
+        val uploadWorkRequest =
+            OneTimeWorkRequest.Builder(UploadWorker::class.java)
+                .setInputData(workData)
+                .addTag(UploadWorker::class.toString())
+                .build()
+        WorkManager.getInstance().enqueue(uploadWorkRequest)
     }
 }

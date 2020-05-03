@@ -8,7 +8,6 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.findNavController
 import itis.ru.scivi.MyApp
 import itis.ru.scivi.R
-import itis.ru.scivi.dialogs.ProgressDialog
 import org.kodein.di.Kodein
 import org.kodein.di.KodeinAware
 import org.kodein.di.generic.instance
@@ -32,13 +31,13 @@ class MainActivity : AppCompatActivity(), KodeinAware {
     }
 
     fun showLoading(show: Boolean) {
-        val dialog = ProgressDialog.newInstance()
-        if (show) {
+        /*val dialog = ProgressDialog.newInstance()
+        if (show && !dialog.isVisible) {
             dialog.show(supportFragmentManager, null)
         } else {
             if (dialog.isVisible)
                 dialog.dismiss()
-        }
+        }*/
     }
 
     private fun observeIsLoginedLiveData() =
