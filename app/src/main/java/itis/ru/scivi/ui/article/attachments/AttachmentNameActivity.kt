@@ -1,4 +1,4 @@
-package itis.ru.scivi.ui.add_article.attachments
+package itis.ru.scivi.ui.article.attachments
 
 import android.app.Activity
 import android.content.Context

@@ -38,17 +38,23 @@ class MainActivity : AppCompatActivity(), KodeinAware {
             if (dialog.isVisible)
                 dialog.dismiss()
         }*/
+        /*val dialog =
+            indeterminateProgressDialog(message = "Please wait a bit…", title = "Fetching data")
+
+        if (show)
+            dialog.show()
+        else
+            dialog.hide()*/
     }
 
     private fun observeIsLoginedLiveData() =
         viewModel.isLoginedLiveData.observe(this, Observer { response ->
             if (response?.data != null) {
                 if (response.data) {
-                    navController.navigate(R.id.action_loginFragment_to_searchFragment)
+                    navController.navigate(R.id.searchFragment)
                 } else {
                     navController.navigate(R.id.loginFragment)
                 }
             }
         })
-
 }

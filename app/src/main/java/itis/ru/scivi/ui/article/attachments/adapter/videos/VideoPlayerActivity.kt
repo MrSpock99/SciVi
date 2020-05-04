@@ -1,4 +1,4 @@
-package itis.ru.scivi.ui.add_article.attachments.adapter.videos
+package itis.ru.scivi.ui.article.attachments.adapter.videos
 
 import android.app.Activity
 import android.content.Context

@@ -1,4 +1,4 @@
-package itis.ru.scivi.ui.add_article.attachments.adapter.photos
+package itis.ru.scivi.ui.article.attachments.adapter.photos
 
 import android.net.Uri
 import androidx.lifecycle.MutableLiveData

@@ -1,4 +1,4 @@
-package itis.ru.scivi.ui.add_article.attachments.adapter.videos
+package itis.ru.scivi.ui.article.attachments.adapter.photos
 
 import android.view.LayoutInflater
 import android.view.View
@@ -7,25 +7,24 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import itis.ru.scivi.R
-import itis.ru.scivi.model.VideoLocal
-import kotlinx.android.synthetic.main.item_photo.view.pb_downloading
-import kotlinx.android.synthetic.main.item_photo.view.tv_attachment_name
-import kotlinx.android.synthetic.main.item_video.view.*
+import itis.ru.scivi.model.PhotoLocal
+import kotlinx.android.synthetic.main.item_photo.view.*
 
-class VideosAdapter(
-    var list: MutableList<VideoLocal>,
-    private val clickListener: (VideoLocal) -> Unit
+class PhotosAdapter(
+    var list: MutableList<PhotoLocal>,
+    private val clickListener: (PhotoLocal) -> Unit
 ) :
-    RecyclerView.Adapter<VideosAdapter.AttachmentHolder>() {
+    RecyclerView.Adapter<PhotosAdapter.AttachmentHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AttachmentHolder {
         val inflater = LayoutInflater.from(parent.context)
         return AttachmentHolder(
             inflater.inflate(
-                R.layout.item_video,
+                R.layout.item_photo,
                 parent,
                 false
             )
         )
+
     }
 
     override fun getItemViewType(position: Int): Int {
@@ -40,7 +39,7 @@ class VideosAdapter(
         holder.bind(list[position], clickListener)
     }
 
-    fun submitList(list: MutableList<VideoLocal>) {
+    fun submitList(list: MutableList<PhotoLocal>) {
         val duffResult = DiffUtil.calculateDiff(
             PhotoDiffUtilCallback(
                 this.list,
@@ -52,24 +51,21 @@ class VideosAdapter(
     }
 
     class AttachmentHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        fun bind(item: VideoLocal, clickListener: (VideoLocal) -> Unit) {
+        fun bind(item: PhotoLocal, clickListener: (PhotoLocal) -> Unit) {
             itemView.tv_attachment_name.text = item.name
             if (item.upload) {
-                itemView.iv_attachment_preview.setImageResource(R.drawable.ic_file_upload_white)
-                itemView.iv_attachment_preview.visibility = View.VISIBLE
+                itemView.iv_attachment_photo.setImageResource(R.drawable.ic_file_upload_white)
+                itemView.iv_attachment_photo.visibility = View.VISIBLE
                 itemView.pb_downloading.visibility = View.GONE
-                itemView.iv_play.visibility = View.GONE
             } else if (item.isSent) {
-                itemView.iv_attachment_preview.visibility = View.VISIBLE
+                itemView.iv_attachment_photo.visibility = View.VISIBLE
                 itemView.pb_downloading.visibility = View.GONE
-                itemView.iv_play.visibility = View.VISIBLE
                 Glide.with(itemView)
                     .load(item.url)
-                    .into(itemView.iv_attachment_preview)
+                    .into(itemView.iv_attachment_photo)
             } else {
-                itemView.iv_attachment_preview.visibility = View.GONE
+                itemView.iv_attachment_photo.visibility = View.GONE
                 itemView.pb_downloading.visibility = View.VISIBLE
-                itemView.iv_play.visibility = View.GONE
             }
             itemView.setOnClickListener {
                 clickListener(item)
@@ -78,8 +74,8 @@ class VideosAdapter(
     }
 
     class PhotoDiffUtilCallback(
-        private val oldList: List<VideoLocal>,
-        private val newList: List<VideoLocal>
+        private val oldList: List<PhotoLocal>,
+        private val newList: List<PhotoLocal>
     ) :
         DiffUtil.Callback() {
         override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {

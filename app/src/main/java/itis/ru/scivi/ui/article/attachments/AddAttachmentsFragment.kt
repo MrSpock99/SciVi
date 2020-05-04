@@ -1,4 +1,4 @@
-package itis.ru.scivi.ui.add_article.attachments
+package itis.ru.scivi.ui.article.attachments
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -10,8 +10,8 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.fragment.navArgs
 import itis.ru.scivi.R
 import itis.ru.scivi.model.ArticleLocal
-import itis.ru.scivi.ui.add_article.AddArticleViewModel
-import itis.ru.scivi.ui.add_article.attachments.adapter.AttachmentFragmentAdapter
+import itis.ru.scivi.ui.article.AddArticleViewModel
+import itis.ru.scivi.ui.article.attachments.adapter.AttachmentFragmentAdapter
 import itis.ru.scivi.ui.base.BaseFragment
 import kotlinx.android.synthetic.main.fragment_add_attachments.*
 import org.jetbrains.anko.toast
@@ -20,6 +20,7 @@ import org.kodein.di.generic.instance
 class AddAttachmentsFragment : BaseFragment() {
     private val args: AddAttachmentsFragmentArgs by navArgs()
     private val viewModeFactory: ViewModelProvider.Factory by instance()
+    private lateinit var fragmentAdapter: AttachmentFragmentAdapter
     private val viewModel: AddArticleViewModel by lazy {
         ViewModelProviders.of(this, viewModeFactory).get(AddArticleViewModel::class.java)
     }
@@ -52,6 +53,7 @@ class AddAttachmentsFragment : BaseFragment() {
 
     private fun setOnClickListeners() {
         btn_continue.setOnClickListener {
+            fragmentAdapter.saveQrCodes()
             viewModel.addArticleToDb(ArticleLocal(name = args.article.name, id = args.article.id))
         }
     }
@@ -61,11 +63,12 @@ class AddAttachmentsFragment : BaseFragment() {
     }
 
     private fun setViewPager() {
-        val fragmentAdapter =
+        fragmentAdapter =
             AttachmentFragmentAdapter(
                 fragmentManager!!,
                 args.article.id,
                 args.createArticle,
+                args.article.name,
                 rootActivity
             )
         viewpager_main.adapter = fragmentAdapter

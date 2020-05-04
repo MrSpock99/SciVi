@@ -1,4 +1,4 @@
-package itis.ru.scivi.ui.add_article
+package itis.ru.scivi.ui.article
 
 import androidx.lifecycle.MutableLiveData
 import io.reactivex.android.schedulers.AndroidSchedulers

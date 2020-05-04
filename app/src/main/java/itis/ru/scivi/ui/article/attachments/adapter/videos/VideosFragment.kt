@@ -1,5 +1,6 @@
-package itis.ru.scivi.ui.add_article.attachments.adapter.videos
+package itis.ru.scivi.ui.article.attachments.adapter.videos
 
+import android.Manifest
 import android.app.Activity
 import android.content.Intent
 import android.graphics.Rect
@@ -15,23 +16,29 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
+import com.tbruyelle.rxpermissions2.RxPermissions
 import itis.ru.scivi.R
+import itis.ru.scivi.model.QrCodeModel
 import itis.ru.scivi.model.VideoLocal
-import itis.ru.scivi.ui.add_article.attachments.AttachmentNameActivity
+import itis.ru.scivi.ui.article.QrCodeScanner
+import itis.ru.scivi.ui.article.attachments.AttachmentNameActivity
+import itis.ru.scivi.ui.article.attachments.adapter.AttachmentFragment
 import itis.ru.scivi.ui.base.BaseFragment
 import itis.ru.scivi.utils.Const
 import itis.ru.scivi.utils.dpToPx
 import itis.ru.scivi.workers.UploadWorker
 import kotlinx.android.synthetic.main.fragment_attachments.*
+import org.jetbrains.anko.toast
 import org.kodein.di.generic.instance
 
-class VideosFragment : BaseFragment() {
+class VideosFragment : BaseFragment(), AttachmentFragment {
     private lateinit var adapter: VideosAdapter
     private val viewModeFactory: ViewModelProvider.Factory by instance()
     private val viewModel: VideosViewModel by lazy {
         ViewModelProviders.of(this, viewModeFactory).get(VideosViewModel::class.java)
     }
     private lateinit var articleId: String
+    private lateinit var articleName: String
     private var createArticle: Boolean = false
     var uploadItem: VideoLocal? = null
 
@@ -41,6 +48,7 @@ class VideosFragment : BaseFragment() {
         savedInstanceState: Bundle?
     ): View? {
         articleId = arguments?.getString(Const.Article.ID).toString()
+        articleName = arguments?.getString(Const.Article.NAME).toString()
         createArticle = arguments!!.getBoolean(Const.Args.CREATE_ARTICLE)
         return inflater.inflate(R.layout.fragment_attachments, container, false)
     }
@@ -48,14 +56,47 @@ class VideosFragment : BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initRecycler()
-        observePhotos()
+        observeVideos()
         observeLoading()
         observeUploadStatus()
+        setOnClickListeners()
     }
 
     override fun onResume() {
         super.onResume()
         viewModel.getArticleVideos(arguments?.getString(Const.Article.ID).toString())
+    }
+
+    override fun saveQrCodes() {
+        adapter.list.forEach { video ->
+            if (!video.upload) {
+                val qrCodeModel =
+                    QrCodeModel(
+                        url = video.url.toString(),
+                        fileType = Const.FileType.VIDEO,
+                        name = video.name,
+                        articleId = articleId
+                    )
+                generateAndSaveQrCode(qrCodeModel, articleName)
+            }
+        }
+    }
+
+    private fun setOnClickListeners() {
+        fab_qr_code.setOnClickListener {
+            RxPermissions(this).request(
+                Manifest.permission.CAMERA,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE
+            ).subscribe { granted ->
+                if (granted)
+                    startActivityForResult(
+                        QrCodeScanner.newIntent(rootActivity),
+                        Const.RequestCode.QR_CODE
+                    )
+                else
+                    rootActivity.toast(getString(R.string.camera_permission))
+            }
+        }
     }
 
     private fun observeUploadStatus() {
@@ -74,7 +115,7 @@ class VideosFragment : BaseFragment() {
         })
     }
 
-    private fun observePhotos() {
+    private fun observeVideos() {
         viewModel.videosLiveData.observe(this, Observer { response ->
             if (response.data != null) {
                 if (response.data.isEmpty() && createArticle)
@@ -84,12 +125,16 @@ class VideosFragment : BaseFragment() {
                 }
                 val minusList = response.data.minus(adapter.list)
                 val currentList = adapter.list
-                minusList.forEach { videoLocal ->
-                    currentList[currentList.indexOf(currentList.find { videoLocal.name == it.name })] =
-                        videoLocal
+                if (currentList.isNotEmpty()) {
+                    minusList.forEach { videoLocal ->
+                        currentList[currentList.indexOf(currentList.find { videoLocal.name == it.name })] =
+                            videoLocal
+                    }
+                    adapter.submitList(currentList)
+                    adapter.notifyDataSetChanged()
+                } else {
+                    adapter.submitList(response.data)
                 }
-                adapter.submitList(currentList)
-                adapter.notifyDataSetChanged()
             }
         })
     }
@@ -167,14 +212,22 @@ class VideosFragment : BaseFragment() {
                 Const.FileType.VIDEO,
                 videoLocal.name
             )
+        } else if (requestCode == Const.RequestCode.QR_CODE && resultCode == Activity.RESULT_OK) {
+            val json = (data!!.extras?.get(Const.Args.KEY_QR_CODE).toString())
+            openAttachment(rootActivity, json)
         }
     }
 
 
     companion object {
-        fun newInstance(articleId: String, createArticle: Boolean): VideosFragment {
+        fun newInstance(
+            articleId: String,
+            createArticle: Boolean,
+            articleName: String
+        ): VideosFragment {
             val bundle = Bundle()
             bundle.putString(Const.Article.ID, articleId)
+            bundle.putString(Const.Article.NAME, articleName)
             bundle.putBoolean(Const.Args.CREATE_ARTICLE, createArticle)
             val fragment =
                 VideosFragment()

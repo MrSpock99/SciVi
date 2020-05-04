@@ -15,11 +15,13 @@ object Const {
     }
 
     object RequestCode {
+        val QR_CODE: Int = 3
         val ATTACHMENT_NAME: Int = 2
         val GALLERY: Int = 1
     }
 
     object Args {
+        val KEY_QR_CODE: String = "KEY_QR_CODE"
         val FILE_TYPE: String = "FILE_TYPE"
         val UPLOAD_MODEL: String = "UPLOAD_MODEL"
         val ATTACHMENT: String = "ATTACHEMNT"
