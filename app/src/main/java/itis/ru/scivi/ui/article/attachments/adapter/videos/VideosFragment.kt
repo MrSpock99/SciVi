@@ -19,6 +19,7 @@ import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import com.tbruyelle.rxpermissions2.RxPermissions
 import itis.ru.scivi.R
+import itis.ru.scivi.model.ArticleLocal
 import itis.ru.scivi.model.QrCodeModel
 import itis.ru.scivi.model.VideoLocal
 import itis.ru.scivi.ui.article.QrCodeScanner
@@ -70,6 +71,7 @@ class VideosFragment : BaseFragment(), AttachmentFragment {
     }
 
     override fun saveQrCodes() {
+        val article = ArticleLocal(id = articleId, name = articleName)
         adapter.list.forEach { video ->
             if (!video.upload) {
                 val qrCodeModel =
@@ -77,7 +79,7 @@ class VideosFragment : BaseFragment(), AttachmentFragment {
                         url = video.url.toString(),
                         fileType = Const.FileType.VIDEO,
                         name = video.name,
-                        articleId = articleId
+                        article = article
                     )
                 generateAndSaveQrCode(qrCodeModel, articleName)
             }
@@ -166,7 +168,13 @@ class VideosFragment : BaseFragment(), AttachmentFragment {
                 if (it.upload) {
                     startGalleryIntent()
                 } else if (it.isSent) {
-                    startActivity(VideoPlayerActivity.newIntent(rootActivity, it.url!!))
+                    startActivity(
+                        VideoPlayerActivity.newIntentWithUri(
+                            rootActivity,
+                            it.url!!,
+                            false
+                        )
+                    )
                 }
             }
         adapter.submitList(initList)
@@ -224,7 +232,7 @@ class VideosFragment : BaseFragment(), AttachmentFragment {
             )
         } else if (requestCode == Const.RequestCode.QR_CODE && resultCode == Activity.RESULT_OK) {
             val json = (data!!.extras?.get(Const.Args.KEY_QR_CODE).toString())
-            openAttachment(rootActivity, json)
+            openAttachment(rootActivity, json, false)
         }
     }
 

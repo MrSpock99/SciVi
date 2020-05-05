@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.view.KeyEvent
 import android.view.View
 import com.google.android.exoplayer2.*
 import com.google.android.exoplayer2.source.ExtractorMediaSource
@@ -13,12 +14,18 @@ import com.google.android.exoplayer2.source.TrackGroupArray
 import com.google.android.exoplayer2.trackselection.*
 import com.google.android.exoplayer2.upstream.*
 import com.google.android.exoplayer2.util.Util
+import itis.ru.scivi.R
+import itis.ru.scivi.model.ArticleLocal
+import itis.ru.scivi.model.QrCodeModel
+import itis.ru.scivi.ui.main.MainActivity
 import itis.ru.scivi.utils.Const
 import kotlinx.android.synthetic.main.activity_video_player.*
+
 
 class VideoPlayerActivity : Activity(), Player.EventListener {
 
     var player: SimpleExoPlayer? = null
+    private var articleLocal: ArticleLocal? = null
 
     override fun onPlaybackParametersChanged(playbackParameters: PlaybackParameters?) {
     }
@@ -64,7 +71,8 @@ class VideoPlayerActivity : Activity(), Player.EventListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(itis.ru.scivi.R.layout.activity_video_player)
+        setContentView(R.layout.activity_video_player)
+        articleLocal = intent.getParcelableExtra(Const.Args.ARTICLE) as? ArticleLocal
         initializePlayer()
         buildMediaSource(intent.extras?.get(Const.Args.FILE_PATH) as Uri)
     }
@@ -82,6 +90,15 @@ class VideoPlayerActivity : Activity(), Player.EventListener {
     override fun onRestart() {
         super.onRestart()
         resumePlayer()
+    }
+
+    override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {
+        return if (keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0) {
+            if (intent.extras?.getBoolean(Const.Args.FROM_SEARCH_FRAGMENT)!! && articleLocal != null) {
+                startActivity(MainActivity.newIntent(this, articleLocal!!))
+            }
+            true
+        } else super.onKeyDown(keyCode, event)
     }
 
     private fun pausePlayer() {
@@ -145,9 +162,22 @@ class VideoPlayerActivity : Activity(), Player.EventListener {
     }
 
     companion object {
-        fun newIntent(context: Context, uri: Uri): Intent {
+        fun newIntentWithQrCodeModel(
+            context: Context,
+            qrCodeModel: QrCodeModel,
+            fromSearchFragment: Boolean
+        ): Intent {
+            val intent = Intent(context, VideoPlayerActivity::class.java)
+            intent.putExtra(Const.Args.FILE_PATH, Uri.parse(qrCodeModel.url))
+            intent.putExtra(Const.Args.FROM_SEARCH_FRAGMENT, fromSearchFragment)
+            intent.putExtra(Const.Args.ARTICLE, qrCodeModel.article)
+            return intent
+        }
+
+        fun newIntentWithUri(context: Context, uri: Uri, fromSearchFragment: Boolean): Intent {
             val intent = Intent(context, VideoPlayerActivity::class.java)
             intent.putExtra(Const.Args.FILE_PATH, uri)
+            intent.putExtra(Const.Args.FROM_SEARCH_FRAGMENT, fromSearchFragment)
             return intent
         }
     }

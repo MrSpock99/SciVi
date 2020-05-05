@@ -18,4 +18,6 @@
     <string name="videos">Videos</string>
     <string name="ar">AR</string>
     <string name="camera_permission">Without camera you can\'t scan qr code</string>
+    <string name="or">OR</string>
+    <string name="invalid_qrcode">Invalid qr-code</string>
 </resources>

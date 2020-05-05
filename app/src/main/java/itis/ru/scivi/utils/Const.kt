@@ -21,6 +21,8 @@ object Const {
     }
 
     object Args {
+        val ARTICLE: String = "ARTICLE"
+        val FROM_SEARCH_FRAGMENT: String = "FROM_SEARCH_FRAGMENT"
         val KEY_QR_CODE: String = "KEY_QR_CODE"
         val FILE_TYPE: String = "FILE_TYPE"
         val UPLOAD_MODEL: String = "UPLOAD_MODEL"

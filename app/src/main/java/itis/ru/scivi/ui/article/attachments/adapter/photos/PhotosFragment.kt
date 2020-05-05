@@ -19,6 +19,7 @@ import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import com.tbruyelle.rxpermissions2.RxPermissions
 import itis.ru.scivi.R
+import itis.ru.scivi.model.ArticleLocal
 import itis.ru.scivi.model.PhotoLocal
 import itis.ru.scivi.model.QrCodeModel
 import itis.ru.scivi.ui.article.QrCodeScanner
@@ -71,6 +72,7 @@ class PhotosFragment : BaseFragment(), AttachmentFragment {
     }
 
     override fun saveQrCodes() {
+        val article = ArticleLocal(id = articleId, name = articleName)
         adapter.list.forEach { photo ->
             if (!photo.upload) {
                 val qrCodeModel =
@@ -78,7 +80,7 @@ class PhotosFragment : BaseFragment(), AttachmentFragment {
                         url = photo.url.toString(),
                         fileType = Const.FileType.IMAGE,
                         name = photo.name,
-                        articleId = articleId
+                        article = article
                     )
                 generateAndSaveQrCode(qrCodeModel, articleName)
             }
@@ -222,7 +224,11 @@ class PhotosFragment : BaseFragment(), AttachmentFragment {
                 photoLocal.name
             )
         } else if (requestCode == Const.RequestCode.QR_CODE && resultCode == Activity.RESULT_OK) {
-            openAttachment(rootActivity, data!!.extras!!.get(Const.Args.KEY_QR_CODE).toString())
+            openAttachment(
+                rootActivity,
+                data!!.extras!!.get(Const.Args.KEY_QR_CODE).toString(),
+                false
+            )
         }
     }
 
