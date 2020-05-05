@@ -1,6 +1,7 @@
 package itis.ru.scivi.ui.article.attachments.adapter.videos
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
 import android.graphics.Rect
@@ -60,6 +61,7 @@ class VideosFragment : BaseFragment(), AttachmentFragment {
         observeLoading()
         observeUploadStatus()
         setOnClickListeners()
+        setVisibilities()
     }
 
     override fun onResume() {
@@ -80,6 +82,14 @@ class VideosFragment : BaseFragment(), AttachmentFragment {
                 generateAndSaveQrCode(qrCodeModel, articleName)
             }
         }
+    }
+
+    @SuppressLint("RestrictedApi")
+    override fun setVisibilities() {
+        if (createArticle)
+            fab_qr_code.visibility = View.GONE
+        else
+            fab_qr_code.visibility = View.VISIBLE
     }
 
     private fun setOnClickListeners() {

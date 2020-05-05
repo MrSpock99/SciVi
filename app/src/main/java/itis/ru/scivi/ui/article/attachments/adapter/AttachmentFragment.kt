@@ -41,4 +41,6 @@ interface AttachmentFragment {
             )
         }
     }
+
+    fun setVisibilities()
 }

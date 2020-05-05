@@ -1,11 +1,15 @@
 package itis.ru.scivi.ui.article.attachments.adapter.videos
 
+import android.graphics.drawable.Drawable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.DataSource
+import com.bumptech.glide.load.engine.GlideException
+import com.bumptech.glide.request.RequestListener
 import itis.ru.scivi.R
 import itis.ru.scivi.model.VideoLocal
 import kotlinx.android.synthetic.main.item_photo.view.pb_downloading
@@ -61,10 +65,31 @@ class VideosAdapter(
                 itemView.iv_play.visibility = View.GONE
             } else if (item.isSent) {
                 itemView.iv_attachment_preview.visibility = View.VISIBLE
-                itemView.pb_downloading.visibility = View.GONE
-                itemView.iv_play.visibility = View.VISIBLE
                 Glide.with(itemView)
                     .load(item.url)
+                    .listener(object : RequestListener<Drawable> {
+                        override fun onLoadFailed(
+                            p0: GlideException?,
+                            p1: Any?,
+                            p2: com.bumptech.glide.request.target.Target<Drawable>?,
+                            p3: Boolean
+                        ): Boolean {
+                            itemView.pb_downloading.visibility = View.GONE
+                            return false
+                        }
+
+                        override fun onResourceReady(
+                            p0: Drawable?,
+                            p1: Any?,
+                            p2: com.bumptech.glide.request.target.Target<Drawable>?,
+                            p3: DataSource?,
+                            p4: Boolean
+                        ): Boolean {
+                            itemView.pb_downloading.visibility = View.GONE
+                            itemView.iv_play.visibility = View.VISIBLE
+                            return false
+                        }
+                    })
                     .into(itemView.iv_attachment_preview)
             } else {
                 itemView.iv_attachment_preview.visibility = View.GONE

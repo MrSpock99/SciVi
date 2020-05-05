@@ -43,6 +43,9 @@ class AttachmentNameActivity : Activity() {
                 }.show()
             }
         }
+        btn_cancel.setOnClickListener {
+            onBackPressed()
+        }
     }
 
     companion object {
