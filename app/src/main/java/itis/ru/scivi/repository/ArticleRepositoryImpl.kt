@@ -48,10 +48,9 @@ class ArticleRepositoryImpl(private val db: FirebaseFirestore, private val stora
         }
     }
 
-    override fun getArticlesByKeyword(keyword: String): Observable<List<ArticleRemote>> {
+    override fun getAllArticles(): Observable<List<ArticleRemote>> {
         return Observable.create { emitter ->
             db.collection(Const.Article.ARTICLES)
-                .whereGreaterThanOrEqualTo(Const.Article.NAME, keyword)
                 .get()
                 .addOnCompleteListener { task ->
                     if (task.isSuccessful) {
