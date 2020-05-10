@@ -17,6 +17,8 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
+import com.bumptech.glide.Glide
+import com.stfalcon.imageviewer.StfalconImageViewer
 import com.tbruyelle.rxpermissions2.RxPermissions
 import itis.ru.scivi.R
 import itis.ru.scivi.model.ArticleLocal
@@ -168,6 +170,13 @@ class PhotosFragment : BaseFragment(), AttachmentFragment {
             ) {
                 if (it.upload) {
                     startGalleryIntent()
+                } else {
+                    StfalconImageViewer.Builder<PhotoLocal>(
+                        context,
+                        arrayListOf(it)
+                    ) { view, image ->
+                        Glide.with(context!!).load(image.url).into(view)
+                    }.show()
                 }
             }
         adapter.submitList(initList)

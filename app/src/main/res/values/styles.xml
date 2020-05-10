@@ -11,4 +11,11 @@
     <style name="tab_text" parent="TextAppearance.Design.Tab">
         <item name="android:fontFamily">@font/ubuntu_medium</item>
     </style>
+
+    <style name="ProgressDialogTheme" parent="android:Theme.DeviceDefault.Dialog">
+        <item name="DialogTitleAppearance">@android:style/TextAppearance.Medium</item>
+        <item name="DialogTitleText">@string/loading</item>
+        <item name="DialogSpotColor">@color/white</item>
+        <item name="DialogSpotCount">4</item>
+    </style>
 </resources>

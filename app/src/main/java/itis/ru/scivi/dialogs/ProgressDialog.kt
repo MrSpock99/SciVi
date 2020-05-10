@@ -3,7 +3,10 @@ package itis.ru.scivi.dialogs
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
-import android.view.*
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.view.Window
 import androidx.fragment.app.DialogFragment
 import itis.ru.scivi.R
 
@@ -13,10 +16,10 @@ class ProgressDialog : DialogFragment() {
         private var progressDialog: ProgressDialog? = null
 
         fun newInstance(): ProgressDialog {
-            return if (progressDialog == null) {
+            if (progressDialog == null) {
                 progressDialog = ProgressDialog()
-                progressDialog!!
-            } else progressDialog!!
+                return progressDialog!!
+            } else return progressDialog!!
         }
     }
 

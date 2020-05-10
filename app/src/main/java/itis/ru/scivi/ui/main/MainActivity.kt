@@ -8,6 +8,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.findNavController
+import dmax.dialog.SpotsDialog
 import itis.ru.scivi.MyApp
 import itis.ru.scivi.R
 import itis.ru.scivi.model.ArticleLocal
@@ -28,6 +29,7 @@ class MainActivity : AppCompatActivity(), KodeinAware {
     }
 
     val navController by lazy { findNavController(R.id.nav_host_fragment) }
+    private lateinit var dialog: android.app.AlertDialog
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,6 +41,8 @@ class MainActivity : AppCompatActivity(), KodeinAware {
             viewModel.checkIsLogined()
             observeIsLoginedLiveData()
         }
+        dialog =
+            SpotsDialog.Builder().setContext(this).setTheme(R.style.ProgressDialogTheme).build()
     }
 
     private fun goToArticle(article: ArticleLocal) {
@@ -50,20 +54,22 @@ class MainActivity : AppCompatActivity(), KodeinAware {
     }
 
     fun showLoading(show: Boolean) {
-        /*val dialog = ProgressDialog.newInstance()
-        if (show && !dialog.isVisible) {
-            dialog.show(supportFragmentManager, null)
-        } else {
-            if (dialog.isVisible)
-                dialog.dismiss()
-        }*/
-        /*val dialog =
-            indeterminateProgressDialog(message = "Please wait a bit…", title = "Fetching data")
+        /*  val dialog = ProgressDialog.newInstance()
+          try {
+              if (show && !dialog.isVisible && !dialog.isAdded) {
+                  dialog.show(supportFragmentManager, dialog.toString())
+              } else {
+                  if (dialog.isVisible)
+                      dialog.dismiss()
+              }
+          }catch (ex: IllegalStateException){
+
+          }*/
 
         if (show)
             dialog.show()
         else
-            dialog.hide()*/
+            dialog.dismiss()
     }
 
     private fun observeIsLoginedLiveData() =
@@ -81,9 +87,7 @@ class MainActivity : AppCompatActivity(), KodeinAware {
         fun newIntent(context: Context, article: ArticleLocal): Intent {
             val intent = Intent(context, MainActivity::class.java)
             intent.putExtra(Const.Args.ARTICLE, article)
-            intent.flags = Intent.FLAG_ACTIVITY_NO_HISTORY or
-                    Intent.FLAG_ACTIVITY_NEW_TASK or
-                    Intent.FLAG_ACTIVITY_CLEAR_TASK
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
             return intent
         }
     }
