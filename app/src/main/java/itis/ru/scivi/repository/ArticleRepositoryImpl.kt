@@ -19,6 +19,7 @@ class ArticleRepositoryImpl(private val db: FirebaseFirestore, private val stora
             val document = db.collection(Const.Article.ARTICLES)
                 .document()
             articleMap[Const.Article.ID] = article.id
+            articleMap[Const.Article.OWNER] = article.owner
 
             document.set(articleMap)
                 .addOnSuccessListener {

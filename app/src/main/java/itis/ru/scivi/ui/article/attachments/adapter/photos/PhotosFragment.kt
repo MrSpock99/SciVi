@@ -22,6 +22,7 @@ import com.stfalcon.imageviewer.StfalconImageViewer
 import com.tbruyelle.rxpermissions2.RxPermissions
 import itis.ru.scivi.R
 import itis.ru.scivi.model.ArticleLocal
+import itis.ru.scivi.model.LocalUser
 import itis.ru.scivi.model.PhotoLocal
 import itis.ru.scivi.model.QrCodeModel
 import itis.ru.scivi.ui.article.QrCodeScanner
@@ -30,6 +31,7 @@ import itis.ru.scivi.ui.article.attachments.adapter.AttachmentFragment
 import itis.ru.scivi.ui.base.BaseFragment
 import itis.ru.scivi.utils.Const
 import itis.ru.scivi.utils.dpToPx
+import itis.ru.scivi.utils.getUser
 import itis.ru.scivi.workers.UploadWorker
 import kotlinx.android.synthetic.main.fragment_attachments.*
 import org.jetbrains.anko.toast
@@ -44,6 +46,7 @@ class PhotosFragment : BaseFragment(), AttachmentFragment {
     }
     private lateinit var articleId: String
     private lateinit var articleName: String
+    private lateinit var owner: LocalUser
     private var createArticle: Boolean = false
     var uploadItem: PhotoLocal? = null
 
@@ -55,6 +58,7 @@ class PhotosFragment : BaseFragment(), AttachmentFragment {
         articleId = arguments?.getString(Const.Article.ID).toString()
         articleName = arguments?.getString(Const.Article.NAME).toString()
         createArticle = arguments!!.getBoolean(Const.Args.CREATE_ARTICLE)
+        owner = arguments?.getParcelable(Const.Args.USER)!!
         return inflater.inflate(R.layout.fragment_attachments, container, false)
     }
 
@@ -74,7 +78,7 @@ class PhotosFragment : BaseFragment(), AttachmentFragment {
     }
 
     override fun saveQrCodes() {
-        val article = ArticleLocal(id = articleId, name = articleName)
+        val article = ArticleLocal(id = articleId, name = articleName, owner = getUser())
         adapter.list.forEach { photo ->
             if (!photo.upload) {
                 val qrCodeModel =
@@ -82,7 +86,8 @@ class PhotosFragment : BaseFragment(), AttachmentFragment {
                         url = photo.url.toString(),
                         fileType = Const.FileType.IMAGE,
                         name = photo.name,
-                        article = article
+                        article = article,
+                        owner = getUser()
                     )
                 generateAndSaveQrCode(qrCodeModel, articleName)
             }
@@ -91,7 +96,7 @@ class PhotosFragment : BaseFragment(), AttachmentFragment {
 
     @SuppressLint("RestrictedApi")
     override fun setVisibilities() {
-        if (createArticle)
+        if (createArticle || owner == getUser())
             fab_qr_code.visibility = View.GONE
         else
             fab_qr_code.visibility = View.VISIBLE
@@ -140,10 +145,12 @@ class PhotosFragment : BaseFragment(), AttachmentFragment {
                 }
                 val minusList = response.data.minus(adapter.list)
                 val currentList = adapter.list
-                if (currentList.isNotEmpty()) {
+                if (currentList.isNotEmpty() && createArticle) {
                     minusList.forEach { photoLocal ->
-                        currentList[currentList.indexOf(currentList.find { photoLocal.name == it.name })] =
-                            photoLocal
+                        val photo = currentList.find { photoLocal.name == it.name }
+                        if (photo != null) {
+                            currentList[currentList.indexOf(photo)] = photoLocal
+                        }
                     }
                     adapter.submitList(currentList)
                     adapter.notifyDataSetChanged()
@@ -156,7 +163,7 @@ class PhotosFragment : BaseFragment(), AttachmentFragment {
 
     private fun initRecycler() {
         val initList = mutableListOf<PhotoLocal>()
-        if (createArticle) {
+        if (createArticle || owner == getUser()) {
             uploadItem = PhotoLocal(null)
             uploadItem?.let {
                 it.upload = true
@@ -245,12 +252,14 @@ class PhotosFragment : BaseFragment(), AttachmentFragment {
         fun newInstance(
             articleId: String,
             createArticle: Boolean,
-            articleName: String
+            articleName: String,
+            user: LocalUser
         ): PhotosFragment {
             val bundle = Bundle()
             bundle.putString(Const.Article.ID, articleId)
             bundle.putString(Const.Article.NAME, articleName)
             bundle.putBoolean(Const.Args.CREATE_ARTICLE, createArticle)
+            bundle.putParcelable(Const.Args.USER, user)
             val fragment =
                 PhotosFragment()
             fragment.arguments = bundle

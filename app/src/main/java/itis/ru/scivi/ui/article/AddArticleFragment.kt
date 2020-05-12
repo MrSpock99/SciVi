@@ -8,6 +8,7 @@ import android.view.WindowManager
 import itis.ru.scivi.R
 import itis.ru.scivi.model.ArticleLocal
 import itis.ru.scivi.ui.base.BaseFragment
+import itis.ru.scivi.utils.getUser
 import kotlinx.android.synthetic.main.fragment_add_article.*
 import org.jetbrains.anko.alert
 import org.jetbrains.anko.yesButton
@@ -36,11 +37,12 @@ class AddArticleFragment : BaseFragment() {
             if (et_article_name.text.toString().isNotEmpty()) {
                 val article = ArticleLocal(
                     name = et_article_name.text.toString(),
-                    id = UUID.randomUUID().toString()
+                    id = UUID.randomUUID().toString(),
+                    owner = getUser()
                 )
                 val action =
                     AddArticleFragmentDirections.actionAddArticleFragmentToAddAttachmentsFragment(
-                        article, true
+                        article, true, user = getUser()
                     )
                 rootActivity.navController.navigate(action)
             } else {

@@ -49,5 +49,8 @@
             android:name="create_article"
             app:argType="boolean"
             android:defaultValue="false" />
+        <argument
+            android:name="user"
+            app:argType="itis.ru.scivi.model.LocalUser" />
     </fragment>
 </navigation>

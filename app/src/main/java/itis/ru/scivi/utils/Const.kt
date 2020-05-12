@@ -2,6 +2,7 @@ package itis.ru.scivi.utils
 
 object Const {
     object Article {
+        val OWNER: String = "owner"
         const val ID: String = "id"
         const val PHOTOS: String = "photos"
         const val ATTACHMENTS: String = "attachments"
@@ -21,6 +22,7 @@ object Const {
     }
 
     object Args {
+        val USER: String = "USER"
         val ARTICLE: String = "ARTICLE"
         val FROM_SEARCH_FRAGMENT: String = "FROM_SEARCH_FRAGMENT"
         val KEY_QR_CODE: String = "KEY_QR_CODE"

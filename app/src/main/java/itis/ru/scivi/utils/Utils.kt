@@ -6,17 +6,19 @@ import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Environment
 import android.view.inputmethod.InputMethodManager
+import com.google.firebase.auth.FirebaseAuth
 import com.google.zxing.BarcodeFormat
+import com.google.zxing.EncodeHintType
 import com.google.zxing.MultiFormatWriter
 import com.google.zxing.WriterException
 import com.journeyapps.barcodescanner.BarcodeEncoder
+import itis.ru.scivi.model.LocalUser
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
 import java.io.InputStream
 import java.text.SimpleDateFormat
 import java.util.*
-
 
 fun dpToPx(dp: Int): Int {
     return (dp * Resources.getSystem().displayMetrics.density).toInt()
@@ -27,6 +29,21 @@ fun showKeyboard(context: Context) {
     imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY)
 }
 
+fun hideKeyboard(context: Context) {
+    val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+    imm.toggleSoftInput(
+        InputMethodManager.HIDE_IMPLICIT_ONLY,
+        InputMethodManager.HIDE_IMPLICIT_ONLY
+    )
+}
+
+fun getUser(): LocalUser {
+    return LocalUser(
+        FirebaseAuth.getInstance().currentUser?.email!!,
+        FirebaseAuth.getInstance().currentUser?.displayName!!
+    )
+}
+
 fun getStream(context: Context, uri: Uri): FileInputStream {
     val parcelFileDescriptor: InputStream? =
         context.getContentResolver().openInputStream(uri)
@@ -35,9 +52,11 @@ fun getStream(context: Context, uri: Uri): FileInputStream {
 }
 
 fun generateQrCode(text: String): Bitmap? {
+    val hints = Hashtable<EncodeHintType, Any>()
+    hints[EncodeHintType.CHARACTER_SET] = "UTF-8"
     val multiFormatWriter = MultiFormatWriter()
     return try {
-        val bitMatrix = multiFormatWriter.encode(text, BarcodeFormat.QR_CODE, 200, 200)
+        val bitMatrix = multiFormatWriter.encode(text, BarcodeFormat.QR_CODE, 200, 200, hints)
         val barcodeEncoder = BarcodeEncoder()
         barcodeEncoder.createBitmap(bitMatrix)
     } catch (e: WriterException) {

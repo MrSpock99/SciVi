@@ -5,6 +5,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentStatePagerAdapter
 import itis.ru.scivi.R
+import itis.ru.scivi.model.LocalUser
 import itis.ru.scivi.ui.article.attachments.adapter.photos.PhotosFragment
 import itis.ru.scivi.ui.article.attachments.adapter.videos.VideosFragment
 
@@ -12,14 +13,15 @@ class AttachmentFragmentAdapter(
     fm: FragmentManager, articleId: String,
     createArticle: Boolean,
     articleName: String,
+    user: LocalUser,
     private val context: Context
 ) :
     FragmentStatePagerAdapter(fm) {
 
     var photosFragment =
-        PhotosFragment.newInstance(articleId, createArticle, articleName = articleName)
+        PhotosFragment.newInstance(articleId, createArticle, articleName = articleName, user = user)
     var videosFragment =
-        VideosFragment.newInstance(articleId, createArticle, articleName = articleName)
+        VideosFragment.newInstance(articleId, createArticle, articleName = articleName, user = user)
 
     override fun getItem(position: Int): Fragment {
         return when (position) {

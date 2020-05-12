@@ -48,7 +48,7 @@ class MainActivity : AppCompatActivity(), KodeinAware {
     private fun goToArticle(article: ArticleLocal) {
         navController.navigate(R.id.searchFragment)
         val action = SearchFragmentDirections.actionSearchFragmentToAddAttachmentsFragment(
-            article
+            article, user = article.owner
         )
         navController.navigate(action)
     }
@@ -76,7 +76,11 @@ class MainActivity : AppCompatActivity(), KodeinAware {
         viewModel.isLoginedLiveData.observe(this, Observer { response ->
             if (response?.data != null) {
                 if (response.data) {
-                    navController.navigate(R.id.action_loginFragment_to_searchFragment)
+                    try {
+                        navController.navigate(R.id.action_loginFragment_to_searchFragment)
+                    } catch (ex: IllegalArgumentException) {
+                        navController.navigate(R.id.searchFragment)
+                    }
                 } else {
                     navController.navigate(R.id.loginFragment)
                 }

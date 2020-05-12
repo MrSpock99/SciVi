@@ -190,7 +190,7 @@ class SearchFragment : BaseFragment(), AttachmentFragment {
         adapter = SearchArticlesAdapter(arrayListOf()) {
             val action =
                 SearchFragmentDirections.actionSearchFragmentToAddAttachmentsFragment(
-                    it
+                    it, createArticle = false, user = it.owner
                 )
             rootActivity.navController.navigate(action)
         }

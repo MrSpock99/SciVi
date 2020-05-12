@@ -51,7 +51,13 @@ class ArticleInteractor(private val articleRepository: ArticleRepository) {
             .flatMap { list ->
                 Observable.fromIterable(list)
                     .filter { item -> item.name.contains(keyword) }
-                    .map { item -> ArticleLocal(id = item.id, name = item.name) }
+                    .map { item ->
+                        ArticleLocal(
+                            id = item.id,
+                            name = item.name,
+                            owner = LocalUser(item.owner.email, item.owner.name)
+                        )
+                    }
                     .toList()
                     .toObservable()
             }
