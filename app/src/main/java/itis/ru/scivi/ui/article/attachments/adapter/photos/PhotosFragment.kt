@@ -1,5 +1,7 @@
-package itis.ru.scivi.ui.add_article.attachments.adapter.photos
+package itis.ru.scivi.ui.article.attachments.adapter.photos
 
+import android.Manifest
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
 import android.graphics.Rect
@@ -15,23 +17,36 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
+import com.bumptech.glide.Glide
+import com.stfalcon.imageviewer.StfalconImageViewer
+import com.tbruyelle.rxpermissions2.RxPermissions
 import itis.ru.scivi.R
+import itis.ru.scivi.model.ArticleLocal
+import itis.ru.scivi.model.LocalUser
 import itis.ru.scivi.model.PhotoLocal
-import itis.ru.scivi.ui.add_article.attachments.AttachmentNameActivity
+import itis.ru.scivi.model.QrCodeModel
+import itis.ru.scivi.ui.article.QrCodeScanner
+import itis.ru.scivi.ui.article.attachments.AttachmentNameActivity
+import itis.ru.scivi.ui.article.attachments.adapter.AttachmentFragment
 import itis.ru.scivi.ui.base.BaseFragment
 import itis.ru.scivi.utils.Const
 import itis.ru.scivi.utils.dpToPx
+import itis.ru.scivi.utils.getUser
 import itis.ru.scivi.workers.UploadWorker
 import kotlinx.android.synthetic.main.fragment_attachments.*
+import org.jetbrains.anko.toast
 import org.kodein.di.generic.instance
 
-class PhotosFragment : BaseFragment() {
+
+class PhotosFragment : BaseFragment(), AttachmentFragment {
     private lateinit var adapter: PhotosAdapter
     private val viewModeFactory: ViewModelProvider.Factory by instance()
     private val viewModel: PhotosViewModel by lazy {
         ViewModelProviders.of(this, viewModeFactory).get(PhotosViewModel::class.java)
     }
     private lateinit var articleId: String
+    private lateinit var articleName: String
+    private lateinit var owner: LocalUser
     private var createArticle: Boolean = false
     var uploadItem: PhotoLocal? = null
 
@@ -41,7 +56,9 @@ class PhotosFragment : BaseFragment() {
         savedInstanceState: Bundle?
     ): View? {
         articleId = arguments?.getString(Const.Article.ID).toString()
+        articleName = arguments?.getString(Const.Article.NAME).toString()
         createArticle = arguments!!.getBoolean(Const.Args.CREATE_ARTICLE)
+        owner = arguments?.getParcelable(Const.Args.USER)!!
         return inflater.inflate(R.layout.fragment_attachments, container, false)
     }
 
@@ -51,11 +68,55 @@ class PhotosFragment : BaseFragment() {
         observePhotos()
         observeLoading()
         observeUploadStatus()
+        setOnClickListeners()
+        setVisibilities()
     }
 
     override fun onResume() {
         super.onResume()
         viewModel.getArticlePhotos(arguments?.getString(Const.Article.ID).toString())
+    }
+
+    override fun saveQrCodes() {
+        val article = ArticleLocal(id = articleId, name = articleName, owner = getUser())
+        adapter.list.forEach { photo ->
+            if (!photo.upload) {
+                val qrCodeModel =
+                    QrCodeModel(
+                        url = photo.url.toString(),
+                        fileType = Const.FileType.IMAGE,
+                        name = photo.name,
+                        article = article,
+                        owner = getUser()
+                    )
+                generateAndSaveQrCode(qrCodeModel, articleName)
+            }
+        }
+    }
+
+    @SuppressLint("RestrictedApi")
+    override fun setVisibilities() {
+        if (createArticle || owner == getUser())
+            fab_qr_code.visibility = View.GONE
+        else
+            fab_qr_code.visibility = View.VISIBLE
+    }
+
+    private fun setOnClickListeners() {
+        fab_qr_code.setOnClickListener {
+            RxPermissions(this).request(
+                Manifest.permission.CAMERA,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE
+            ).subscribe { granted ->
+                if (granted)
+                    startActivityForResult(
+                        QrCodeScanner.newIntent(rootActivity),
+                        Const.RequestCode.QR_CODE
+                    )
+                else
+                    rootActivity.toast(getString(R.string.camera_permission))
+            }
+        }
     }
 
     private fun observeUploadStatus() {
@@ -84,19 +145,25 @@ class PhotosFragment : BaseFragment() {
                 }
                 val minusList = response.data.minus(adapter.list)
                 val currentList = adapter.list
-                minusList.forEach { photoLocal ->
-                    currentList[currentList.indexOf(currentList.find { photoLocal.name == it.name })] =
-                        photoLocal
+                if (currentList.isNotEmpty() && createArticle) {
+                    minusList.forEach { photoLocal ->
+                        val photo = currentList.find { photoLocal.name == it.name }
+                        if (photo != null) {
+                            currentList[currentList.indexOf(photo)] = photoLocal
+                        }
+                    }
+                    adapter.submitList(currentList)
+                    adapter.notifyDataSetChanged()
+                } else {
+                    adapter.submitList(response.data)
                 }
-                adapter.submitList(currentList)
-                adapter.notifyDataSetChanged()
             }
         })
     }
 
     private fun initRecycler() {
         val initList = mutableListOf<PhotoLocal>()
-        if (createArticle) {
+        if (createArticle || owner == getUser()) {
             uploadItem = PhotoLocal(null)
             uploadItem?.let {
                 it.upload = true
@@ -106,12 +173,19 @@ class PhotosFragment : BaseFragment() {
         }
         adapter =
             PhotosAdapter(
-                initList,
-                {
-                    if (it.upload) {
-                        startGalleryIntent()
-                    }
-                })
+                initList
+            ) {
+                if (it.upload) {
+                    startGalleryIntent()
+                } else {
+                    StfalconImageViewer.Builder<PhotoLocal>(
+                        context,
+                        arrayListOf(it)
+                    ) { view, image ->
+                        Glide.with(context!!).load(image.url).into(view)
+                    }.show()
+                }
+            }
         adapter.submitList(initList)
         rv_attachments.adapter = adapter
         rv_attachments.layoutManager = GridLayoutManager(context, 2)
@@ -165,14 +239,27 @@ class PhotosFragment : BaseFragment() {
                 Const.FileType.IMAGE,
                 photoLocal.name
             )
+        } else if (requestCode == Const.RequestCode.QR_CODE && resultCode == Activity.RESULT_OK) {
+            openAttachment(
+                rootActivity,
+                data!!.extras!!.get(Const.Args.KEY_QR_CODE).toString(),
+                false
+            )
         }
     }
 
     companion object {
-        fun newInstance(articleId: String, createArticle: Boolean): PhotosFragment {
+        fun newInstance(
+            articleId: String,
+            createArticle: Boolean,
+            articleName: String,
+            user: LocalUser
+        ): PhotosFragment {
             val bundle = Bundle()
             bundle.putString(Const.Article.ID, articleId)
+            bundle.putString(Const.Article.NAME, articleName)
             bundle.putBoolean(Const.Args.CREATE_ARTICLE, createArticle)
+            bundle.putParcelable(Const.Args.USER, user)
             val fragment =
                 PhotosFragment()
             fragment.arguments = bundle

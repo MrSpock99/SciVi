@@ -3,9 +3,9 @@ package itis.ru.scivi.di
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.google.firebase.auth.FirebaseAuth
-import itis.ru.scivi.ui.add_article.AddArticleViewModel
-import itis.ru.scivi.ui.add_article.attachments.adapter.photos.PhotosViewModel
-import itis.ru.scivi.ui.add_article.attachments.adapter.videos.VideosViewModel
+import itis.ru.scivi.ui.article.AddArticleViewModel
+import itis.ru.scivi.ui.article.attachments.adapter.photos.PhotosViewModel
+import itis.ru.scivi.ui.article.attachments.adapter.videos.VideosViewModel
 import itis.ru.scivi.ui.login.LoginViewModel
 import itis.ru.scivi.ui.main.MainViewModel
 import itis.ru.scivi.ui.search.SearchViewModel

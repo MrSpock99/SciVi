@@ -39,7 +39,6 @@ class ArticleInteractor(private val articleRepository: ArticleRepository) {
                 Observable.fromIterable(list)
                     .map { item ->
                         return@map VideoLocal(url = item.url, name = item.name)
-
                     }
                     .toList()
                     .toObservable()
@@ -47,11 +46,18 @@ class ArticleInteractor(private val articleRepository: ArticleRepository) {
     }
 
     fun getAllArticlesByKeyword(keyword: String): Observable<MutableList<ArticleLocal>> {
-        return articleRepository.getArticlesByKeyword(keyword)
+        return articleRepository.getAllArticles()
             .subscribeOn(Schedulers.io())
             .flatMap { list ->
                 Observable.fromIterable(list)
-                    .map { item -> ArticleLocal(id = item.id, name = item.name) }
+                    .filter { item -> item.name.contains(keyword) }
+                    .map { item ->
+                        ArticleLocal(
+                            id = item.id,
+                            name = item.name,
+                            owner = LocalUser(item.owner.email, item.owner.name)
+                        )
+                    }
                     .toList()
                     .toObservable()
             }

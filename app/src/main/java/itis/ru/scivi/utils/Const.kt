@@ -2,6 +2,7 @@ package itis.ru.scivi.utils
 
 object Const {
     object Article {
+        val OWNER: String = "owner"
         const val ID: String = "id"
         const val PHOTOS: String = "photos"
         const val ATTACHMENTS: String = "attachments"
@@ -15,11 +16,16 @@ object Const {
     }
 
     object RequestCode {
+        val QR_CODE: Int = 3
         val ATTACHMENT_NAME: Int = 2
         val GALLERY: Int = 1
     }
 
     object Args {
+        val USER: String = "USER"
+        val ARTICLE: String = "ARTICLE"
+        val FROM_SEARCH_FRAGMENT: String = "FROM_SEARCH_FRAGMENT"
+        val KEY_QR_CODE: String = "KEY_QR_CODE"
         val FILE_TYPE: String = "FILE_TYPE"
         val UPLOAD_MODEL: String = "UPLOAD_MODEL"
         val ATTACHMENT: String = "ATTACHEMNT"

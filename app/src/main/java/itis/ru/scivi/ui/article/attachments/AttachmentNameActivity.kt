@@ -1,4 +1,4 @@
-package itis.ru.scivi.ui.add_article.attachments
+package itis.ru.scivi.ui.article.attachments
 
 import android.app.Activity
 import android.content.Context
@@ -42,6 +42,9 @@ class AttachmentNameActivity : Activity() {
                     yesButton {}
                 }.show()
             }
+        }
+        btn_cancel.setOnClickListener {
+            onBackPressed()
         }
     }
 

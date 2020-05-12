@@ -8,7 +8,7 @@ import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.firestore.FirebaseFirestore
 import io.reactivex.Completable
 import io.reactivex.Single
-import itis.ru.scivi.model.User
+import itis.ru.scivi.model.LocalUser
 
 const val UID = "uid"
 const val USER_NAME = "name"
@@ -35,11 +35,11 @@ class UserRepositoryImpl constructor(
         }
     }
 
-    override fun addUserToDb(user: User): Completable {
+    override fun addUserToDb(localUser: LocalUser): Completable {
         return Completable.create { emitter ->
             val userMap = HashMap<String, Any>()
             userMap[UID] = firebaseAuth.currentUser?.email as String
-            userMap[USER_NAME] = user.name
+            userMap[USER_NAME] = localUser.name
             db.collection(USERS)
                 .document(firebaseAuth.currentUser?.email ?: "")
                 .set(userMap)
@@ -52,14 +52,14 @@ class UserRepositoryImpl constructor(
         }
     }
 
-    override fun getUserFromDb(firebaseUser: FirebaseUser): Single<User> {
+    override fun getUserFromDb(firebaseUser: FirebaseUser): Single<LocalUser> {
         return Single.create { emitter ->
             db.collection(USERS)
                 .document(firebaseUser.email ?: "")
                 .get().addOnCompleteListener { task ->
                     if (task.isSuccessful) {
                         val result = task.result
-                        val user = result?.toObject(User::class.java)
+                        val user = result?.toObject(LocalUser::class.java)
                         if (user != null) {
                             emitter.onSuccess(user)
                         } else {
@@ -74,7 +74,7 @@ class UserRepositoryImpl constructor(
         }
     }
 
-    override fun getMyProfile(): Single<User> {
+    override fun getMyProfile(): Single<LocalUser> {
         return firebaseAuth.currentUser?.let {
             getUserFromDb(it)
         } ?: Single.error(Exception("user not exists"))

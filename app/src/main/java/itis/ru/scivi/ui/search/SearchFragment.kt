@@ -1,6 +1,7 @@
 package itis.ru.scivi.ui.search
 
-import android.content.Context
+import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -8,7 +9,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.LinearInterpolator
-import android.view.inputmethod.InputMethodManager
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -18,7 +18,10 @@ import androidx.transition.ChangeBounds
 import androidx.transition.Transition
 import androidx.transition.TransitionManager
 import itis.ru.scivi.R
+import itis.ru.scivi.ui.article.QrCodeScanner
+import itis.ru.scivi.ui.article.attachments.adapter.AttachmentFragment
 import itis.ru.scivi.ui.base.BaseFragment
+import itis.ru.scivi.utils.Const
 import itis.ru.scivi.utils.dpToPx
 import itis.ru.scivi.utils.showKeyboard
 import kotlinx.android.synthetic.main.fragment_search.*
@@ -27,7 +30,7 @@ import net.yslibrary.android.keyboardvisibilityevent.Unregistrar
 import org.kodein.di.generic.instance
 
 
-class SearchFragment : BaseFragment() {
+class SearchFragment : BaseFragment(), AttachmentFragment {
     private val viewModeFactory: ViewModelProvider.Factory by instance()
     private val viewModel: SearchViewModel by lazy {
         ViewModelProviders.of(this, viewModeFactory).get(SearchViewModel::class.java)
@@ -73,6 +76,17 @@ class SearchFragment : BaseFragment() {
         }
     }
 
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == Const.RequestCode.QR_CODE && resultCode == Activity.RESULT_OK) {
+            openAttachment(
+                rootActivity,
+                data!!.extras!!.get(Const.Args.KEY_QR_CODE).toString(),
+                true
+            )
+        }
+    }
+
     override fun onStop() {
         super.onStop()
         keyboardVisibilityEvent.unregister()
@@ -82,6 +96,8 @@ class SearchFragment : BaseFragment() {
         if(animate)
             TransitionManager.beginDelayedTransition(transitionsContainer, getTransition())
         tv_app_name.visibility = View.GONE
+        tv_or.visibility = View.GONE
+        iv_qrcode.visibility = View.GONE
 
         val marginParams = (et_search.layoutParams as ViewGroup.MarginLayoutParams)
         marginParams.marginStart = dpToPx(2)
@@ -99,6 +115,8 @@ class SearchFragment : BaseFragment() {
     private fun animateDown() {
         TransitionManager.beginDelayedTransition(transitionsContainer, getTransition())
         tv_app_name.visibility = View.VISIBLE
+        tv_or.visibility = View.VISIBLE
+        iv_qrcode.visibility = View.VISIBLE
 
         val params = (et_search.layoutParams as ViewGroup.MarginLayoutParams)
         params.marginStart = dpToPx(16)
@@ -128,6 +146,9 @@ class SearchFragment : BaseFragment() {
         fab_add.setOnClickListener {
             rootActivity.navController.navigate(R.id.action_searchFragment_to_addArticleFragment)
             rv_articles.visibility = View.GONE
+        }
+        iv_qrcode.setOnClickListener {
+            startActivityForResult(QrCodeScanner.newIntent(rootActivity), Const.RequestCode.QR_CODE)
         }
     }
 
@@ -169,11 +190,17 @@ class SearchFragment : BaseFragment() {
         adapter = SearchArticlesAdapter(arrayListOf()) {
             val action =
                 SearchFragmentDirections.actionSearchFragmentToAddAttachmentsFragment(
-                    it
+                    it, createArticle = false, user = it.owner
                 )
             rootActivity.navController.navigate(action)
         }
         rv_articles.adapter = adapter
         rv_articles.layoutManager = LinearLayoutManager(context)
+    }
+
+    override fun saveQrCodes() {
+    }
+
+    override fun setVisibilities() {
     }
 }

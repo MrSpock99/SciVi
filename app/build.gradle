@@ -77,6 +77,18 @@ dependencies {
     implementation 'com.google.android.exoplayer:exoplayer-dash:2.7.3'
     implementation 'com.google.android.exoplayer:exoplayer-ui:2.7.3'
 
+    //ZXING
+    implementation 'me.dm7.barcodescanner:zxing:1.9'
+    implementation 'com.journeyapps:zxing-android-embedded:3.2.0@aar'
+
+    //RXPermission
+    implementation 'com.github.tbruyelle:rxpermissions:0.10.2'
+
+    //ImageViewer
+    implementation 'com.github.stfalcon:stfalcon-imageviewer:1.0.1'
+
+    implementation 'com.github.d-max:spots-dialog:1.1@aar'
+
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test.ext:junit:1.1.0'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.1'

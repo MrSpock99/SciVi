@@ -19,6 +19,7 @@ class ArticleRepositoryImpl(private val db: FirebaseFirestore, private val stora
             val document = db.collection(Const.Article.ARTICLES)
                 .document()
             articleMap[Const.Article.ID] = article.id
+            articleMap[Const.Article.OWNER] = article.owner
 
             document.set(articleMap)
                 .addOnSuccessListener {
@@ -48,10 +49,9 @@ class ArticleRepositoryImpl(private val db: FirebaseFirestore, private val stora
         }
     }
 
-    override fun getArticlesByKeyword(keyword: String): Observable<List<ArticleRemote>> {
+    override fun getAllArticles(): Observable<List<ArticleRemote>> {
         return Observable.create { emitter ->
             db.collection(Const.Article.ARTICLES)
-                .whereGreaterThanOrEqualTo(Const.Article.NAME, keyword)
                 .get()
                 .addOnCompleteListener { task ->
                     if (task.isSuccessful) {
