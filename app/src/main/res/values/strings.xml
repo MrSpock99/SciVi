@@ -22,4 +22,8 @@
     <string name="invalid_qrcode">Invalid qr-code</string>
     <string name="loading">Loading…</string>
     <string name="finish">Finish</string>
+    <string name="delete">Delete</string>
+    <string name="deleted_successfully">Deleted successfully</string>
+    <string name="article_edit_success">Article has been edited successfully</string>
+    <string name="edit">Edit</string>
 </resources>

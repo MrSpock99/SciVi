@@ -15,8 +15,6 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import androidx.work.WorkInfo
-import androidx.work.WorkManager
 import com.bumptech.glide.Glide
 import com.stfalcon.imageviewer.StfalconImageViewer
 import com.tbruyelle.rxpermissions2.RxPermissions
@@ -28,17 +26,18 @@ import itis.ru.scivi.model.QrCodeModel
 import itis.ru.scivi.ui.article.QrCodeScanner
 import itis.ru.scivi.ui.article.attachments.AttachmentNameActivity
 import itis.ru.scivi.ui.article.attachments.adapter.AttachmentFragment
+import itis.ru.scivi.ui.article.attachments.adapter.OpenAttachment
 import itis.ru.scivi.ui.base.BaseFragment
 import itis.ru.scivi.utils.Const
 import itis.ru.scivi.utils.dpToPx
 import itis.ru.scivi.utils.getUser
-import itis.ru.scivi.workers.UploadWorker
 import kotlinx.android.synthetic.main.fragment_attachments.*
+import org.jetbrains.anko.selector
 import org.jetbrains.anko.toast
 import org.kodein.di.generic.instance
 
 
-class PhotosFragment : BaseFragment(), AttachmentFragment {
+class PhotosFragment : BaseFragment(), AttachmentFragment, OpenAttachment {
     private lateinit var adapter: PhotosAdapter
     private val viewModeFactory: ViewModelProvider.Factory by instance()
     private val viewModel: PhotosViewModel by lazy {
@@ -67,7 +66,8 @@ class PhotosFragment : BaseFragment(), AttachmentFragment {
         initRecycler()
         observePhotos()
         observeLoading()
-        observeUploadStatus()
+        observeUploadStatus(this)
+        observeDeleteStatus(this, rootActivity)
         setOnClickListeners()
         setVisibilities()
     }
@@ -102,6 +102,10 @@ class PhotosFragment : BaseFragment(), AttachmentFragment {
             fab_qr_code.visibility = View.VISIBLE
     }
 
+    override fun getAttachments() {
+        viewModel.getArticlePhotos(arguments?.getString(Const.Article.ID).toString())
+    }
+
     private fun setOnClickListeners() {
         fab_qr_code.setOnClickListener {
             RxPermissions(this).request(
@@ -117,16 +121,6 @@ class PhotosFragment : BaseFragment(), AttachmentFragment {
                     rootActivity.toast(getString(R.string.camera_permission))
             }
         }
-    }
-
-    private fun observeUploadStatus() {
-        WorkManager.getInstance().getWorkInfosByTagLiveData(UploadWorker::class.toString())
-            .observe(this, Observer { workInfo ->
-                if (workInfo != null) {
-                    if (workInfo.any { it.state == WorkInfo.State.SUCCEEDED })
-                        viewModel.getArticlePhotos(arguments?.getString(Const.Article.ID).toString())
-                }
-            })
     }
 
     private fun observeLoading() {
@@ -173,19 +167,29 @@ class PhotosFragment : BaseFragment(), AttachmentFragment {
         }
         adapter =
             PhotosAdapter(
-                initList
-            ) {
-                if (it.upload) {
-                    startGalleryIntent()
-                } else {
-                    StfalconImageViewer.Builder<PhotoLocal>(
-                        context,
-                        arrayListOf(it)
-                    ) { view, image ->
-                        Glide.with(context!!).load(image.url).into(view)
-                    }.show()
-                }
-            }
+                initList, clickListener = {
+                    if (it.upload) {
+                        startGalleryIntent()
+                    } else {
+                        StfalconImageViewer.Builder<PhotoLocal>(
+                            context,
+                            arrayListOf(it)
+                        ) { view, image ->
+                            Glide.with(context!!).load(image.url).into(view)
+                        }.show()
+                    }
+                }, longClickListener = {
+                    val options = listOf(getString(R.string.delete))
+                    rootActivity.selector("", options) { dialogInterface, i ->
+                        if (options[i] == getString(R.string.delete)) {
+                            viewModel.deleteFile(
+                                articleId = articleId,
+                                name = it.name,
+                                fileType = Const.FileType.IMAGE
+                            )
+                        }
+                    }
+                })
         adapter.submitList(initList)
         rv_attachments.adapter = adapter
         rv_attachments.layoutManager = GridLayoutManager(context, 2)

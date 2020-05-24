@@ -18,7 +18,8 @@ import kotlinx.android.synthetic.main.item_video.view.*
 
 class VideosAdapter(
     var list: MutableList<VideoLocal>,
-    private val clickListener: (VideoLocal) -> Unit
+    private val clickListener: (VideoLocal) -> Unit,
+    private val longClickListener: (VideoLocal) -> Unit
 ) :
     RecyclerView.Adapter<VideosAdapter.AttachmentHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AttachmentHolder {
@@ -41,7 +42,7 @@ class VideosAdapter(
     }
 
     override fun onBindViewHolder(holder: AttachmentHolder, position: Int) {
-        holder.bind(list[position], clickListener)
+        holder.bind(list[position], clickListener, longClickListener)
     }
 
     fun submitList(list: MutableList<VideoLocal>) {
@@ -56,7 +57,11 @@ class VideosAdapter(
     }
 
     class AttachmentHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        fun bind(item: VideoLocal, clickListener: (VideoLocal) -> Unit) {
+        fun bind(
+            item: VideoLocal,
+            clickListener: (VideoLocal) -> Unit,
+            longClickListener: (VideoLocal) -> Unit
+        ) {
             itemView.tv_attachment_name.text = item.name
             if (item.upload) {
                 itemView.iv_attachment_preview.setImageResource(R.drawable.ic_file_upload_white)
@@ -98,6 +103,10 @@ class VideosAdapter(
             }
             itemView.setOnClickListener {
                 clickListener(item)
+            }
+            itemView.setOnLongClickListener {
+                longClickListener(item)
+                return@setOnLongClickListener true
             }
         }
     }

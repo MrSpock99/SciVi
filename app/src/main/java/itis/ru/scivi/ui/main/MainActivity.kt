@@ -14,6 +14,7 @@ import itis.ru.scivi.R
 import itis.ru.scivi.model.ArticleLocal
 import itis.ru.scivi.ui.search.SearchFragmentDirections
 import itis.ru.scivi.utils.Const
+import org.jetbrains.anko.toast
 import org.kodein.di.Kodein
 import org.kodein.di.KodeinAware
 import org.kodein.di.generic.instance
@@ -54,22 +55,17 @@ class MainActivity : AppCompatActivity(), KodeinAware {
     }
 
     fun showLoading(show: Boolean) {
-        /*  val dialog = ProgressDialog.newInstance()
-          try {
-              if (show && !dialog.isVisible && !dialog.isAdded) {
-                  dialog.show(supportFragmentManager, dialog.toString())
-              } else {
-                  if (dialog.isVisible)
-                      dialog.dismiss()
-              }
-          }catch (ex: IllegalStateException){
-
-          }*/
-
         if (show)
             dialog.show()
         else
             dialog.dismiss()
+    }
+
+    fun showToastOneTime(text: String) {
+        if (shownToastCount < 1) {
+            toast(text)
+            shownToastCount++
+        }
     }
 
     private fun observeIsLoginedLiveData() =
@@ -88,6 +84,7 @@ class MainActivity : AppCompatActivity(), KodeinAware {
         })
 
     companion object {
+        var shownToastCount: Int = 0
         fun newIntent(context: Context, article: ArticleLocal): Intent {
             val intent = Intent(context, MainActivity::class.java)
             intent.putExtra(Const.Args.ARTICLE, article)

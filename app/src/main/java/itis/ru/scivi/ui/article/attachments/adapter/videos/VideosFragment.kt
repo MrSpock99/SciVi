@@ -15,8 +15,6 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import androidx.work.WorkInfo
-import androidx.work.WorkManager
 import com.tbruyelle.rxpermissions2.RxPermissions
 import itis.ru.scivi.R
 import itis.ru.scivi.model.ArticleLocal
@@ -26,16 +24,17 @@ import itis.ru.scivi.model.VideoLocal
 import itis.ru.scivi.ui.article.QrCodeScanner
 import itis.ru.scivi.ui.article.attachments.AttachmentNameActivity
 import itis.ru.scivi.ui.article.attachments.adapter.AttachmentFragment
+import itis.ru.scivi.ui.article.attachments.adapter.OpenAttachment
 import itis.ru.scivi.ui.base.BaseFragment
 import itis.ru.scivi.utils.Const
 import itis.ru.scivi.utils.dpToPx
 import itis.ru.scivi.utils.getUser
-import itis.ru.scivi.workers.UploadWorker
 import kotlinx.android.synthetic.main.fragment_attachments.*
+import org.jetbrains.anko.selector
 import org.jetbrains.anko.toast
 import org.kodein.di.generic.instance
 
-class VideosFragment : BaseFragment(), AttachmentFragment {
+class VideosFragment : BaseFragment(), AttachmentFragment, OpenAttachment {
     private lateinit var adapter: VideosAdapter
     private val viewModeFactory: ViewModelProvider.Factory by instance()
     private val viewModel: VideosViewModel by lazy {
@@ -64,7 +63,8 @@ class VideosFragment : BaseFragment(), AttachmentFragment {
         initRecycler()
         observeVideos()
         observeLoading()
-        observeUploadStatus()
+        observeUploadStatus(this)
+        observeDeleteStatus(this, rootActivity)
         setOnClickListeners()
         setVisibilities()
     }
@@ -99,6 +99,10 @@ class VideosFragment : BaseFragment(), AttachmentFragment {
             fab_qr_code.visibility = View.VISIBLE
     }
 
+    override fun getAttachments() {
+        viewModel.getArticleVideos(arguments?.getString(Const.Article.ID).toString())
+    }
+
     private fun setOnClickListeners() {
         fab_qr_code.setOnClickListener {
             RxPermissions(this).request(
@@ -114,16 +118,6 @@ class VideosFragment : BaseFragment(), AttachmentFragment {
                     rootActivity.toast(getString(R.string.camera_permission))
             }
         }
-    }
-
-    private fun observeUploadStatus() {
-        WorkManager.getInstance().getWorkInfosByTagLiveData(UploadWorker::class.toString())
-            .observe(this, Observer { workInfo ->
-                if (workInfo != null) {
-                    if (workInfo.any { it.state == WorkInfo.State.SUCCEEDED })
-                        viewModel.getArticleVideos(arguments?.getString(Const.Article.ID).toString())
-                }
-            })
     }
 
     private fun observeLoading() {
@@ -170,20 +164,30 @@ class VideosFragment : BaseFragment(), AttachmentFragment {
         }
         adapter =
             VideosAdapter(
-                initList
-            ) {
-                if (it.upload) {
-                    startGalleryIntent()
-                } else if (it.isSent) {
-                    startActivity(
-                        VideoPlayerActivity.newIntentWithUri(
-                            rootActivity,
-                            it.url!!,
-                            false
+                initList, clickListener = {
+                    if (it.upload) {
+                        startGalleryIntent()
+                    } else if (it.isSent) {
+                        startActivity(
+                            VideoPlayerActivity.newIntentWithUri(
+                                rootActivity,
+                                it.url!!,
+                                false
+                            )
                         )
-                    )
-                }
-            }
+                    }
+                }, longClickListener = {
+                    val options = listOf(getString(R.string.delete))
+                    rootActivity.selector("", options) { dialogInterface, i ->
+                        if (options[i] == getString(R.string.delete)) {
+                            viewModel.deleteFile(
+                                articleId = articleId,
+                                name = it.name,
+                                fileType = Const.FileType.IMAGE
+                            )
+                        }
+                    }
+                })
         adapter.submitList(initList)
         rv_attachments.adapter = adapter
         rv_attachments.layoutManager = GridLayoutManager(context, 2)
