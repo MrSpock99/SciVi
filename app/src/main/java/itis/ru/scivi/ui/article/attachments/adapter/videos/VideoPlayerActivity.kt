@@ -96,8 +96,10 @@ class VideoPlayerActivity : Activity(), Player.EventListener {
         return if (keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0) {
             if (intent.extras?.getBoolean(Const.Args.FROM_SEARCH_FRAGMENT)!! && articleLocal != null) {
                 startActivity(MainActivity.newIntent(this, articleLocal!!))
+            } else {
+                onBackPressed()
             }
-            true
+            false
         } else super.onKeyDown(keyCode, event)
     }
 

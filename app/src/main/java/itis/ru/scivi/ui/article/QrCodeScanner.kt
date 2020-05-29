@@ -25,6 +25,10 @@ class QrCodeScanner : AppCompatActivity(), ZXingScannerView.ResultHandler {
         setContentView(mScannerView)
     }
 
+    override fun onBackPressed() {
+        super.onBackPressed()
+    }
+
     public override fun onResume() {
         super.onResume()
         // Register ourselves as a handler for scan results.
