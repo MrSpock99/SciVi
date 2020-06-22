@@ -1,5 +1,6 @@
 package itis.ru.scivi.ui.search
 
+import android.Manifest
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
@@ -17,9 +18,10 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.transition.ChangeBounds
 import androidx.transition.Transition
 import androidx.transition.TransitionManager
+import com.tbruyelle.rxpermissions2.RxPermissions
 import itis.ru.scivi.R
 import itis.ru.scivi.ui.article.QrCodeScanner
-import itis.ru.scivi.ui.article.attachments.adapter.AttachmentFragment
+import itis.ru.scivi.ui.article.attachments.adapter.OpenAttachment
 import itis.ru.scivi.ui.base.BaseFragment
 import itis.ru.scivi.utils.Const
 import itis.ru.scivi.utils.dpToPx
@@ -27,10 +29,11 @@ import itis.ru.scivi.utils.showKeyboard
 import kotlinx.android.synthetic.main.fragment_search.*
 import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEvent
 import net.yslibrary.android.keyboardvisibilityevent.Unregistrar
+import org.jetbrains.anko.toast
 import org.kodein.di.generic.instance
 
 
-class SearchFragment : BaseFragment(), AttachmentFragment {
+class SearchFragment : BaseFragment(), OpenAttachment {
     private val viewModeFactory: ViewModelProvider.Factory by instance()
     private val viewModel: SearchViewModel by lazy {
         ViewModelProviders.of(this, viewModeFactory).get(SearchViewModel::class.java)
@@ -148,7 +151,18 @@ class SearchFragment : BaseFragment(), AttachmentFragment {
             rv_articles.visibility = View.GONE
         }
         iv_qrcode.setOnClickListener {
-            startActivityForResult(QrCodeScanner.newIntent(rootActivity), Const.RequestCode.QR_CODE)
+            RxPermissions(this).request(
+                Manifest.permission.CAMERA,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE
+            ).subscribe { granted ->
+                if (granted)
+                    startActivityForResult(
+                        QrCodeScanner.newIntent(rootActivity),
+                        Const.RequestCode.QR_CODE
+                    )
+                else
+                    rootActivity.toast(getString(R.string.camera_permission))
+            }
         }
     }
 
@@ -196,11 +210,5 @@ class SearchFragment : BaseFragment(), AttachmentFragment {
         }
         rv_articles.adapter = adapter
         rv_articles.layoutManager = LinearLayoutManager(context)
-    }
-
-    override fun saveQrCodes() {
-    }
-
-    override fun setVisibilities() {
     }
 }

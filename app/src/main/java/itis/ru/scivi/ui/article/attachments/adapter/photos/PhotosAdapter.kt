@@ -16,7 +16,8 @@ import kotlinx.android.synthetic.main.item_photo.view.*
 
 class PhotosAdapter(
     var list: MutableList<PhotoLocal>,
-    private val clickListener: (PhotoLocal) -> Unit
+    private val clickListener: (PhotoLocal) -> Unit,
+    private val longClickListener: (PhotoLocal) -> Unit
 ) :
     RecyclerView.Adapter<PhotosAdapter.AttachmentHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AttachmentHolder {
@@ -40,7 +41,7 @@ class PhotosAdapter(
     }
 
     override fun onBindViewHolder(holder: AttachmentHolder, position: Int) {
-        holder.bind(list[position], clickListener)
+        holder.bind(list[position], clickListener, longClickListener)
     }
 
     fun submitList(list: MutableList<PhotoLocal>) {
@@ -55,7 +56,11 @@ class PhotosAdapter(
     }
 
     class AttachmentHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        fun bind(item: PhotoLocal, clickListener: (PhotoLocal) -> Unit) {
+        fun bind(
+            item: PhotoLocal,
+            clickListener: (PhotoLocal) -> Unit,
+            longClickListener: (PhotoLocal) -> Unit
+        ) {
             itemView.tv_attachment_name.text = item.name
             if (item.upload) {
                 itemView.iv_attachment_photo.setImageResource(R.drawable.ic_file_upload_white)
@@ -94,6 +99,10 @@ class PhotosAdapter(
             }
             itemView.setOnClickListener {
                 clickListener(item)
+            }
+            itemView.setOnLongClickListener {
+                longClickListener(item)
+                return@setOnLongClickListener true
             }
         }
     }

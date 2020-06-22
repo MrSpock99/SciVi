@@ -17,7 +17,6 @@ import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
 import java.io.InputStream
-import java.text.SimpleDateFormat
 import java.util.*
 
 fun dpToPx(dp: Int): Int {
@@ -78,8 +77,8 @@ private fun saveImage(finalBitmap: Bitmap, imageName: String, articleName: Strin
     val root: String = Environment.getExternalStorageDirectory().toString()
     val myDir = File("$root/scivi/$articleName/qrcodes")
     myDir.mkdirs()
-    val timeStamp: String = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
-    val fname = "$imageName-$timeStamp.jpg"
+    //val timeStamp: String = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
+    val fname = "$imageName.jpg"
     val file = File(myDir, fname)
     if (file.exists()) file.delete()
     try {
