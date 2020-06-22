@@ -22,6 +22,7 @@ object Const {
     }
 
     object Args {
+        val DELETE_MODEL: String = "DELETE_MODEL"
         val USER: String = "USER"
         val ARTICLE: String = "ARTICLE"
         val FROM_SEARCH_FRAGMENT: String = "FROM_SEARCH_FRAGMENT"

@@ -12,6 +12,7 @@ import itis.ru.scivi.model.*
 import itis.ru.scivi.repository.ArticleRepository
 import itis.ru.scivi.utils.Const
 import itis.ru.scivi.utils.UriSerializer
+import itis.ru.scivi.workers.DeleteWorker
 import itis.ru.scivi.workers.UploadWorker
 
 class ArticleInteractor(private val articleRepository: ArticleRepository) {
@@ -83,5 +84,25 @@ class ArticleInteractor(private val articleRepository: ArticleRepository) {
                 .addTag(UploadWorker::class.toString())
                 .build()
         WorkManager.getInstance().enqueue(uploadWorkRequest)
+    }
+
+    fun deleteFile(
+        articleId: String,
+        fileType: String,
+        fileName: String
+    ) {
+        val gson = GsonBuilder()
+            .create()
+        val deleteModel =
+            DeleteModel(articleId = articleId, fileType = fileType, name = fileName)
+        val workData = Data.Builder().putString(
+            Const.Args.DELETE_MODEL, gson.toJson(deleteModel)
+        ).build()
+        val deleteWorkRequest =
+            OneTimeWorkRequest.Builder(DeleteWorker::class.java)
+                .setInputData(workData)
+                .addTag(DeleteWorker::class.toString())
+                .build()
+        WorkManager.getInstance().enqueue(deleteWorkRequest)
     }
 }

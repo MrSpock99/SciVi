@@ -13,6 +13,7 @@ import itis.ru.scivi.model.ArticleLocal
 import itis.ru.scivi.ui.article.AddArticleViewModel
 import itis.ru.scivi.ui.article.attachments.adapter.AttachmentFragmentAdapter
 import itis.ru.scivi.ui.base.BaseFragment
+import itis.ru.scivi.ui.main.MainActivity
 import itis.ru.scivi.utils.getUser
 import itis.ru.scivi.utils.hideKeyboard
 import kotlinx.android.synthetic.main.fragment_add_attachments.*
@@ -46,24 +47,35 @@ class AddAttachmentsFragment : BaseFragment() {
             rootActivity.toast(getString(R.string.article_add_success))
             rootActivity.navController.navigate(R.id.searchFragment)
         })
+        MainActivity.shownToastCount = 0
     }
 
     private fun setVisibilities() {
         if (!args.createArticle && args.article.owner != getUser()) {
             btn_continue.visibility = View.GONE
+        } else if (args.article.owner == getUser() && !args.createArticle) {
+            btn_continue.visibility = View.VISIBLE
+            btn_continue.text = getString(R.string.edit)
+        } else if (args.createArticle && args.article.owner == getUser()) {
+            btn_continue.visibility = View.VISIBLE
         }
     }
 
     private fun setOnClickListeners() {
         btn_continue.setOnClickListener {
             fragmentAdapter.saveQrCodes()
-            viewModel.addArticleToDb(
-                ArticleLocal(
-                    name = args.article.name,
-                    id = args.article.id,
-                    owner = getUser()
+            if (args.createArticle) {
+                viewModel.addArticleToDb(
+                    ArticleLocal(
+                        name = args.article.name,
+                        id = args.article.id,
+                        owner = getUser()
+                    )
                 )
-            )
+            } else {
+                rootActivity.toast(getString(R.string.article_edit_success))
+                rootActivity.navController.navigate(R.id.searchFragment)
+            }
         }
     }
 

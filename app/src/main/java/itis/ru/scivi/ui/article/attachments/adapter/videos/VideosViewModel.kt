@@ -1,14 +1,13 @@
 package itis.ru.scivi.ui.article.attachments.adapter.videos
 
-import android.net.Uri
 import androidx.lifecycle.MutableLiveData
 import io.reactivex.android.schedulers.AndroidSchedulers
 import itis.ru.scivi.interactors.ArticleInteractor
 import itis.ru.scivi.model.VideoLocal
-import itis.ru.scivi.ui.base.BaseViewModel
+import itis.ru.scivi.ui.article.attachments.adapter.base.AttachmentViewModel
 import itis.ru.scivi.utils.Response
 
-class VideosViewModel(private val interactor: ArticleInteractor) : BaseViewModel() {
+class VideosViewModel(private val interactor: ArticleInteractor) : AttachmentViewModel(interactor) {
 
     val videosLiveData = MutableLiveData<Response<MutableList<VideoLocal>>>()
 
@@ -28,9 +27,4 @@ class VideosViewModel(private val interactor: ArticleInteractor) : BaseViewModel
         )
     }
 
-    fun uploadFile(uri: Uri, articleId: String, fileType: String, name: String) {
-        interactor.uploadFileFromUri(
-            articleId = articleId, fileType = fileType, fileName = name, uri = uri
-        )
-    }
 }
