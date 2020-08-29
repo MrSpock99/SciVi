@@ -3,10 +3,10 @@
 
 Разработанное приложение позволяет авторам научных и технических статей предоставлять результаты проделанных работ в более наглядном виде с помощью фото- и видеофайлов.
 
-![Главный экран](https://github.com/MrSpock99/SciVi/blob/master/screenshots/photo_2020-05-13_14-43-16.jpg)
+<img src="https://github.com/MrSpock99/SciVi/blob/master/screenshots/photo_2020-05-13_14-43-16.jpg" width="500">
 
-![Экран поиска](https://github.com/MrSpock99/SciVi/blob/master/screenshots/photo_2020-05-13_14-42-45.jpg)
+<img src="https://github.com/MrSpock99/SciVi/blob/master/screenshots/photo_2020-05-13_14-42-45.jpg" width="500">
 
-![Экран назначения имени статьи](https://github.com/MrSpock99/SciVi/blob/master/screenshots/photo_2020-05-13_14-43-13.jpg)
+<img src="https://github.com/MrSpock99/SciVi/blob/master/screenshots/photo_2020-05-13_14-43-13.jpg" width="500">
 
-![Экран вложений статьи](https://github.com/MrSpock99/SciVi/blob/master/screenshots/photo_2020-05-13_15-26-06.jpg)
+<img src="https://github.com/MrSpock99/SciVi/blob/master/screenshots/photo_2020-05-13_15-26-06.jpg" width="500">
