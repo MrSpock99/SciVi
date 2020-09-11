@@ -7,4 +7,12 @@ data class ArticleRemote(
     val owner: RemoteUser
 ) {
     constructor() : this("", "", owner = RemoteUser("", ""))
+    constructor(articleLocal: ArticleLocal) : this(
+        articleLocal.id,
+        articleLocal.name,
+        articleLocal.photoCount,
+        articleLocal.videoCount,
+        articleLocal.ARCount,
+        RemoteUser(articleLocal.owner.email, articleLocal.owner.name)
+    )
 }
