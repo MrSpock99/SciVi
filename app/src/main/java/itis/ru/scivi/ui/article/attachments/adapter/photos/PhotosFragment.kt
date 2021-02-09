@@ -23,7 +23,7 @@ import itis.ru.scivi.model.ArticleLocal
 import itis.ru.scivi.model.LocalUser
 import itis.ru.scivi.model.PhotoLocal
 import itis.ru.scivi.model.QrCodeModel
-import itis.ru.scivi.ui.article.QrCodeScanner
+import itis.ru.scivi.ui.article.add_article.QrCodeScanner
 import itis.ru.scivi.ui.article.attachments.AttachmentNameActivity
 import itis.ru.scivi.ui.article.attachments.adapter.AttachmentFragment
 import itis.ru.scivi.ui.article.attachments.adapter.OpenAttachment

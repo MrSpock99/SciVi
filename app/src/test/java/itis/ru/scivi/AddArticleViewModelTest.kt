@@ -5,7 +5,7 @@ import itis.ru.scivi.interactors.ArticleInteractor
 import itis.ru.scivi.model.ArticleLocal
 import itis.ru.scivi.model.ArticleRemote
 import itis.ru.scivi.model.LocalUser
-import itis.ru.scivi.ui.article.AddArticleViewModel
+import itis.ru.scivi.ui.article.add_article.AddArticleViewModel
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test

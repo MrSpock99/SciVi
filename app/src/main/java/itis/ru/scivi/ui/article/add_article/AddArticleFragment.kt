@@ -1,4 +1,4 @@
-package itis.ru.scivi.ui.article
+package itis.ru.scivi.ui.article.add_article
 
 import android.os.Bundle
 import android.view.LayoutInflater

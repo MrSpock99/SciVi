@@ -30,7 +30,7 @@
             android:name=".ui.article.attachments.adapter.videos.VideoPlayerActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".ui.article.QrCodeScanner"
+            android:name=".ui.article.add_article.QrCodeScanner"
             android:screenOrientation="portrait" />
     </application>
 

@@ -20,7 +20,7 @@ import androidx.transition.Transition
 import androidx.transition.TransitionManager
 import com.tbruyelle.rxpermissions2.RxPermissions
 import itis.ru.scivi.R
-import itis.ru.scivi.ui.article.QrCodeScanner
+import itis.ru.scivi.ui.article.add_article.QrCodeScanner
 import itis.ru.scivi.ui.article.attachments.adapter.OpenAttachment
 import itis.ru.scivi.ui.base.BaseFragment
 import itis.ru.scivi.utils.Const

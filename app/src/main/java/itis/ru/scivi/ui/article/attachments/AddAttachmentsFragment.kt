@@ -10,7 +10,7 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.fragment.navArgs
 import itis.ru.scivi.R
 import itis.ru.scivi.model.ArticleLocal
-import itis.ru.scivi.ui.article.AddArticleViewModel
+import itis.ru.scivi.ui.article.add_article.AddArticleViewModel
 import itis.ru.scivi.ui.article.attachments.adapter.AttachmentFragmentAdapter
 import itis.ru.scivi.ui.base.BaseFragment
 import itis.ru.scivi.ui.main.MainActivity

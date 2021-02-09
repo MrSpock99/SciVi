@@ -31,7 +31,7 @@
     </fragment>
     <fragment
         android:id="@+id/addArticleFragment"
-        android:name="itis.ru.scivi.ui.article.AddArticleFragment"
+        android:name="itis.ru.scivi.ui.article.add_article.AddArticleFragment"
         android:label="AddArticleFragment">
         <action
             android:id="@+id/action_addArticleFragment_to_addAttachmentsFragment"
